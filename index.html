@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048 Deluxe - Enhanced Edition</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title-section">
+                <h1>2048 <span class="deluxe">DELUXE</span></h1>
+                <p class="subtitle">Join the tiles, get to 2048!</p>
+            </div>
+            <div class="scores">
+                <div class="score-container">
+                    <div class="score-label">SCORE</div>
+                    <div class="score-value" id="score">0</div>
+                    <div class="score-addition" id="score-addition"></div>
+                </div>
+                <div class="score-container">
+                    <div class="score-label">BEST</div>
+                    <div class="score-value" id="best-score">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" id="new-game">New Game</button>
+            <div class="game-status" id="game-status"></div>
+        </div>
+
+        <!-- Power-ups Section -->
+        <div class="powerups">
+            <div class="powerup-item" id="swap-btn" title="Swap any two tiles">
+                <div class="powerup-icon">🔄</div>
+                <div class="powerup-name">Swap</div>
+                <div class="powerup-count" id="swap-count">0</div>
+            </div>
+            <div class="powerup-item" id="undo-btn" title="Undo last move">
+                <div class="powerup-icon">↶</div>
+                <div class="powerup-name">Undo</div>
+                <div class="powerup-count" id="undo-count">3</div>
+            </div>
+            <div class="powerup-item" id="shuffle-btn" title="Shuffle tiles">
+                <div class="powerup-icon">🔀</div>
+                <div class="powerup-name">Shuffle</div>
+                <div class="powerup-count" id="shuffle-count">2</div>
+            </div>
+            <div class="powerup-item" id="remove-btn" title="Remove any tile">
+                <div class="powerup-icon">🗑️</div>
+                <div class="powerup-name">Remove</div>
+                <div class="powerup-count" id="remove-count">2</div>
+            </div>
+            <div class="powerup-item" id="lock-btn" title="Lock a tile for 3 moves">
+                <div class="powerup-icon">🔒</div>
+                <div class="powerup-name">Lock</div>
+                <div class="powerup-count" id="lock-count">0</div>
+            </div>
+            <div class="powerup-item" id="double-btn" title="Double any tile's value">
+                <div class="powerup-icon">✨</div>
+                <div class="powerup-name">Double</div>
+                <div class="powerup-count" id="double-count">0</div>
+            </div>
+        </div>
+
+        <!-- Game Board -->
+        <div class="game-container">
+            <div class="grid-container" id="grid-container"></div>
+            <div class="tile-container" id="tile-container"></div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="instructions">
+            <p><strong>How to play:</strong> Use arrow keys (↑ ↓ ← →) or swipe to move tiles. 
+            When two tiles with the same number touch, they merge into one!</p>
+            <p><strong>Power-ups:</strong> Earn power-ups by creating tiles! 
+            32=Swap, 64=Lock, 128=Undo, 256=Shuffle, 512=Remove, 1024=Double, 2048=Bonus!</p>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div class="modal" id="game-over-modal">
+        <div class="modal-content">
+            <h2 id="modal-title">Game Over!</h2>
+            <p id="modal-message">No more moves available</p>
+            <div class="modal-score">
+                <div>Final Score: <span id="final-score">0</span></div>
+                <div id="new-best" style="display: none;">🎉 New Best Score! 🎉</div>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <button class="btn btn-primary" id="modal-undo">Undo Last Move</button>
+                <button class="btn btn-primary" id="modal-new-game">New Game</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
