@@ -102,6 +102,9 @@ class Game2048 {
             this.closeModal();
             this.newGame();
         });
+        document.getElementById('modal-continue').addEventListener('click', () => {
+            this.closeModal();
+        });
         document.getElementById('modal-undo').addEventListener('click', () => {
             this.undoFromGameOver();
         });
@@ -333,7 +336,6 @@ class Game2048 {
                     i++;
                     
                     if (newValue === 2048 && !this.won) {
-                        this.won = true;
                         this.showVictory();
                     }
                 } else {
@@ -371,7 +373,6 @@ class Game2048 {
                     i--;
                     
                     if (newValue === 2048 && !this.won) {
-                        this.won = true;
                         this.showVictory();
                     }
                 } else {
@@ -414,7 +415,6 @@ class Game2048 {
                     i++;
                     
                     if (newValue === 2048 && !this.won) {
-                        this.won = true;
                         this.showVictory();
                     }
                 } else {
@@ -458,7 +458,6 @@ class Game2048 {
                     i--;
                     
                     if (newValue === 2048 && !this.won) {
-                        this.won = true;
                         this.showVictory();
                     }
                 } else {
@@ -1516,13 +1515,22 @@ class Game2048 {
     }
     
     showVictory() {
+        this.won = true;
         setTimeout(() => {
+            const continueBtn = document.getElementById('modal-continue');
+            const undoBtn = document.getElementById('modal-undo');
+            if (continueBtn) continueBtn.style.display = 'inline-block';
+            if (undoBtn) undoBtn.style.display = 'none';
             this.showModal('🎉 You Win! 🎉', 'You reached 2048! Continue playing to reach higher scores!');
         }, 500);
     }
     
     showGameOver() {
         setTimeout(() => {
+            const continueBtn = document.getElementById('modal-continue');
+            const undoBtn = document.getElementById('modal-undo');
+            if (continueBtn) continueBtn.style.display = 'none';
+            if (undoBtn) undoBtn.style.display = 'inline-block';
             this.showModal('Game Over!', 'No more moves available');
         }, 500);
     }
