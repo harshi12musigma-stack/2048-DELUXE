@@ -17,6 +17,8 @@ body {
 .container {
     max-width: 600px;
     width: 100%;
+    position: relative;
+    z-index: 1000; /* Above particle canvas */
 }
 
 .header {

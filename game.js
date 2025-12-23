@@ -1921,7 +1921,7 @@ class ParticleSystem {
         this.canvas.style.width = '100%';
         this.canvas.style.height = '100%';
         this.canvas.style.pointerEvents = 'none';
-        this.canvas.style.zIndex = '9999';
+        this.canvas.style.zIndex = '100'; // Below game UI but above background
         document.body.appendChild(this.canvas);
         
         this.ctx = this.canvas.getContext('2d');
