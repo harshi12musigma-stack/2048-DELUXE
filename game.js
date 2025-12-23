@@ -61,12 +61,16 @@ class Game2048 {
             }
         };
         
+        // Particle System
+        this.particleSystem = null;
+        
         this.init();
     }
     
     init() {
         this.loadThemeProgress();
         this.setupGrid();
+        this.setupParticleSystem();
         this.setupEventListeners();
         this.updateBestScore();
         this.updatePowerupCounts();
@@ -329,6 +333,7 @@ class Game2048 {
         for (let r = 0; r < this.gridSize; r++) {
             const row = this.grid[r].filter(val => val !== 0);
             const merged = [];
+            let col = 0; // Track column position for particles
             
             for (let i = 0; i < row.length; i++) {
                 if (i < row.length - 1 && row[i] === row[i + 1]) {
@@ -336,6 +341,10 @@ class Game2048 {
                     merged.push(newValue);
                     this.score += newValue;
                     this.checkForPowerupReward(newValue);
+                    
+                    // Emit particles at merge position
+                    this.emitMergeParticles(r, col, newValue);
+                    
                     i++;
                     
                     if (newValue === 2048 && !this.won) {
@@ -344,6 +353,7 @@ class Game2048 {
                 } else {
                     merged.push(row[i]);
                 }
+                col++;
             }
             
             while (merged.length < this.gridSize) {
@@ -373,6 +383,11 @@ class Game2048 {
                     merged.unshift(newValue);
                     this.score += newValue;
                     this.checkForPowerupReward(newValue);
+                    
+                    // Emit particles at merge position (right side)
+                    const col = this.gridSize - merged.length;
+                    this.emitMergeParticles(r, col, newValue);
+                    
                     i--;
                     
                     if (newValue === 2048 && !this.won) {
@@ -409,12 +424,18 @@ class Game2048 {
             }
             
             const merged = [];
+            let row = 0; // Track row position for particles
+            
             for (let i = 0; i < col.length; i++) {
                 if (i < col.length - 1 && col[i] === col[i + 1]) {
                     const newValue = col[i] * 2;
                     merged.push(newValue);
                     this.score += newValue;
                     this.checkForPowerupReward(newValue);
+                    
+                    // Emit particles at merge position
+                    this.emitMergeParticles(row, c, newValue);
+                    
                     i++;
                     
                     if (newValue === 2048 && !this.won) {
@@ -423,6 +444,7 @@ class Game2048 {
                 } else {
                     merged.push(col[i]);
                 }
+                row++;
             }
             
             while (merged.length < this.gridSize) {
@@ -458,6 +480,11 @@ class Game2048 {
                     merged.unshift(newValue);
                     this.score += newValue;
                     this.checkForPowerupReward(newValue);
+                    
+                    // Emit particles at merge position (bottom)
+                    const row = this.gridSize - merged.length;
+                    this.emitMergeParticles(row, c, newValue);
+                    
                     i--;
                     
                     if (newValue === 2048 && !this.won) {
@@ -1630,8 +1657,9 @@ class Game2048 {
         // Update theme button UI
         const themeButton = document.querySelector(`[data-theme="${themeName}"]`);
         if (themeButton) {
+            themeButton.classList.remove('locked');
             themeButton.classList.add('active');
-            const lockIcon = themeButton.querySelector('.theme-lock');
+            const lockIcon = themeButton.querySelector('.lock-icon');
             if (lockIcon) {
                 lockIcon.style.display = 'none';
             }
@@ -1645,6 +1673,9 @@ class Game2048 {
         
         // Show unlock notification
         this.showThemeUnlockNotification(themeName);
+        
+        // Emit celebration particles BEFORE switching theme
+        this.emitThemeUnlockParticles();
         
         // Auto-switch to newly unlocked theme
         this.switchTheme(themeName);
@@ -1732,7 +1763,8 @@ class Game2048 {
                             // Update button UI
                             const themeButton = document.querySelector(`[data-theme="${themeKey}"]`);
                             if (themeButton) {
-                                const lockIcon = themeButton.querySelector('.theme-lock');
+                                themeButton.classList.remove('locked');
+                                const lockIcon = themeButton.querySelector('.lock-icon');
                                 if (lockIcon) {
                                     lockIcon.style.display = 'none';
                                 }
@@ -1764,10 +1796,228 @@ class Game2048 {
             console.log('No saved theme data found');
         }
     }
+    
+    // ===== PARTICLE SYSTEM =====
+    
+    setupParticleSystem() {
+        this.particleSystem = new ParticleSystem();
+        console.log('✨ Particle system initialized');
+    }
+    
+    getThemeColors() {
+        const themeColorMap = {
+            default: ['#7a9d8e', '#8ba898', '#b0b0b0'],
+            cyberpunk: ['#ff006e', '#00f5ff', '#bd00ff'],
+            vaporwave: ['#ff6ec7', '#b967ff', '#ffb347'],
+            matrix: ['#00ff41', '#00ff41', '#00ff41']
+        };
+        return themeColorMap[this.currentTheme] || themeColorMap.default;
+    }
+    
+    emitMergeParticles(row, col, value) {
+        if (!this.particleSystem) return;
+        
+        const tileContainer = document.getElementById('tile-container');
+        const rect = tileContainer.getBoundingClientRect();
+        const tileSize = rect.width / this.gridSize;
+        const gap = 15;
+        
+        const x = rect.left + col * (tileSize + gap) + tileSize / 2;
+        const y = rect.top + row * (tileSize + gap) + tileSize / 2;
+        
+        const colors = this.getThemeColors();
+        const particleCount = Math.min(8 + Math.floor(Math.log2(value)), 20);
+        
+        this.particleSystem.emit(x, y, particleCount, {
+            colors: colors,
+            sizeRange: [3, 8],
+            speedRange: [1, 3],
+            lifetime: 1000,
+            spread: 360
+        });
+    }
+    
+    emitThemeUnlockParticles() {
+        if (!this.particleSystem) return;
+        
+        const colors = this.getThemeColors();
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        
+        // Burst effect
+        for (let i = 0; i < 3; i++) {
+            setTimeout(() => {
+                this.particleSystem.emit(centerX, centerY, 50, {
+                    colors: colors,
+                    sizeRange: [4, 12],
+                    speedRange: [2, 6],
+                    lifetime: 2000,
+                    spread: 360
+                });
+            }, i * 100);
+        }
+    }
+}
+
+// ===== PARTICLE CLASSES =====
+
+class Particle {
+    constructor(x, y, color, velocity, size, lifetime) {
+        this.x = x;
+        this.y = y;
+        this.vx = velocity.x;
+        this.vy = velocity.y;
+        this.color = color;
+        this.size = size;
+        this.lifetime = lifetime;
+        this.age = 0;
+        this.opacity = 1;
+    }
+    
+    update(deltaTime) {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += 0.15; // Gravity
+        this.age += deltaTime;
+        this.opacity = Math.max(0, 1 - (this.age / this.lifetime));
+        this.size = Math.max(0, this.size * 0.98); // Shrink
+    }
+    
+    isDead() {
+        return this.age >= this.lifetime || this.opacity <= 0 || this.size <= 0.5;
+    }
+    
+    render(ctx) {
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+}
+
+class ParticleSystem {
+    constructor() {
+        this.particles = [];
+        this.canvas = null;
+        this.ctx = null;
+        this.animationId = null;
+        this.lastTime = Date.now();
+        this.maxParticles = 200;
+        
+        this.setupCanvas();
+        this.startAnimation();
+    }
+    
+    setupCanvas() {
+        // Create canvas element
+        this.canvas = document.createElement('canvas');
+        this.canvas.id = 'particle-canvas';
+        this.canvas.style.position = 'fixed';
+        this.canvas.style.top = '0';
+        this.canvas.style.left = '0';
+        this.canvas.style.width = '100%';
+        this.canvas.style.height = '100%';
+        this.canvas.style.pointerEvents = 'none';
+        this.canvas.style.zIndex = '9999';
+        document.body.appendChild(this.canvas);
+        
+        this.ctx = this.canvas.getContext('2d');
+        this.resizeCanvas();
+        
+        // Handle window resize
+        window.addEventListener('resize', () => this.resizeCanvas());
+    }
+    
+    resizeCanvas() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+    }
+    
+    emit(x, y, count, config = {}) {
+        const {
+            colors = ['#7a9d8e', '#8ba898', '#b0b0b0'],
+            sizeRange = [3, 8],
+            speedRange = [1, 3],
+            lifetime = 1000,
+            spread = 360
+        } = config;
+        
+        for (let i = 0; i < count; i++) {
+            if (this.particles.length >= this.maxParticles) break;
+            
+            const angle = (Math.random() * spread - spread / 2) * (Math.PI / 180);
+            const speed = speedRange[0] + Math.random() * (speedRange[1] - speedRange[0]);
+            const size = sizeRange[0] + Math.random() * (sizeRange[1] - sizeRange[0]);
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            const velocity = {
+                x: Math.cos(angle) * speed,
+                y: Math.sin(angle) * speed
+            };
+            
+            const particle = new Particle(x, y, color, velocity, size, lifetime);
+            this.particles.push(particle);
+        }
+    }
+    
+    startAnimation() {
+        const animate = () => {
+            const currentTime = Date.now();
+            const deltaTime = currentTime - this.lastTime;
+            this.lastTime = currentTime;
+            
+            this.update(deltaTime);
+            this.render();
+            
+            this.animationId = requestAnimationFrame(animate);
+        };
+        
+        animate();
+    }
+    
+    update(deltaTime) {
+        // Update all particles
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+            this.particles[i].update(deltaTime);
+            
+            // Remove dead particles
+            if (this.particles[i].isDead()) {
+                this.particles.splice(i, 1);
+            }
+        }
+    }
+    
+    render() {
+        // Clear canvas
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Render all particles
+        for (const particle of this.particles) {
+            particle.render(this.ctx);
+        }
+    }
+    
+    clear() {
+        this.particles = [];
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+    
+    destroy() {
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+        }
+        if (this.canvas && this.canvas.parentNode) {
+            this.canvas.parentNode.removeChild(this.canvas);
+        }
+    }
 }
 
 // Initialize game when page loads
 let game;
 document.addEventListener('DOMContentLoaded', () => {
     game = new Game2048();
+});
 });
