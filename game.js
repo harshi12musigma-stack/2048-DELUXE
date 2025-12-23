@@ -1584,8 +1584,11 @@ class Game2048 {
     
     // ===== THEME SYSTEM =====
     checkThemeUnlock(tileValue) {
+        console.log('Checking theme unlock for tile value:', tileValue);
         for (const [themeKey, theme] of Object.entries(this.themes)) {
+            console.log(`Theme ${themeKey}: unlockedAt=${theme.unlockedAt}, unlocked=${theme.unlocked}`);
             if (theme.unlockedAt === tileValue && !theme.unlocked) {
+                console.log('✨ Theme unlock condition met for:', themeKey);
                 this.unlockTheme(themeKey);
             }
         }
@@ -1594,17 +1597,29 @@ class Game2048 {
     unlockTheme(themeName) {
         if (!this.themes[themeName]) return;
         
+        console.log('🎨 Unlocking theme:', themeName);
+        
         this.themes[themeName].unlocked = true;
         this.saveThemeProgress();
         
-        // Show unlock notification
-        this.showThemeUnlockNotification(themeName);
+        // Update theme button UI
+        const themeButton = document.querySelector(`[data-theme="${themeName}"]`);
+        if (themeButton) {
+            themeButton.classList.add('active');
+            const lockIcon = themeButton.querySelector('.theme-lock');
+            if (lockIcon) {
+                lockIcon.style.display = 'none';
+            }
+        }
         
         // Show theme selector if hidden
         const themeSelector = document.getElementById('theme-selector');
         if (themeSelector && themeSelector.style.display === 'none') {
             themeSelector.style.display = 'block';
         }
+        
+        // Show unlock notification
+        this.showThemeUnlockNotification(themeName);
         
         // Auto-switch to newly unlocked theme
         this.switchTheme(themeName);
@@ -1672,22 +1687,35 @@ class Game2048 {
     }
 
     loadThemeProgress() {
+        console.log('Loading theme progress...');
         const saved = localStorage.getItem('gameThemes');
         if (saved) {
             try {
                 const themeData = JSON.parse(saved);
+                console.log('Saved theme data:', themeData);
                 
                 // Restore unlocked themes
                 if (themeData.unlockedThemes) {
                     themeData.unlockedThemes.forEach(themeKey => {
                         if (this.themes[themeKey]) {
                             this.themes[themeKey].unlocked = true;
+                            console.log(`Restored theme: ${themeKey}`);
+                            
+                            // Update button UI
+                            const themeButton = document.querySelector(`[data-theme="${themeKey}"]`);
+                            if (themeButton) {
+                                const lockIcon = themeButton.querySelector('.theme-lock');
+                                if (lockIcon) {
+                                    lockIcon.style.display = 'none';
+                                }
+                            }
                         }
                     });
                 }
                 
                 // Restore current theme
                 if (themeData.currentTheme && this.themes[themeData.currentTheme]?.unlocked) {
+                    console.log('Switching to saved theme:', themeData.currentTheme);
                     this.switchTheme(themeData.currentTheme);
                 }
                 
@@ -1697,12 +1725,15 @@ class Game2048 {
                     const themeSelector = document.getElementById('theme-selector');
                     if (themeSelector) {
                         themeSelector.style.display = 'block';
+                        console.log('Theme selector shown');
                     }
                 }
                 
             } catch (error) {
                 console.error('Error loading theme progress:', error);
             }
+        } else {
+            console.log('No saved theme data found');
         }
     }
 }
