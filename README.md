@@ -29,8 +29,9 @@ python3 -m http.server 8000
   - Create **2048+** → Get combo rewards! 🎉
 - **💾 Auto-save** - Your progress survives browser rage-quits
 - **⏪ Undo from Game Over** - Because everyone deserves a second chance
-- **🎯 Interactive Remove** - Click the tile YOU want gone
-- **⚡ Boost Mode** - Double your next merge (4x the tile value!)
+- **🎯 Interactive Powerups** - Click-to-select system for Remove, Swap, Lock, and Double
+- **🔒 Lock System** - Strategic tile locking for ultimate control
+- **✨ Double Power** - Instantly boost tiles toward 4096+
 - **🎨 Smart Tile Colors** - Actually tell your numbers apart
 
 ## 🎯 Powerups Explained
@@ -63,10 +64,13 @@ python3 -m http.server 8000
 ## 🏆 Pro Tips
 
 1. Corner strategy still works (boring but effective)
-2. Don't waste powerups early (you'll thank us later)
-3. The undo button is NOT a crutch (it totally is)
-4. 2048 is just the beginning (keep going, champ)
-5. Dark mode + 2AM = *chef's kiss*
+2. Lock your highest tile in the corner (game changer!)
+3. Save double powerup for late game (4096 here we come)
+4. Don't waste powerups early (you'll thank us later)
+5. Swap can save impossible situations (use wisely)
+6. The undo button is NOT a crutch (it totally is)
+7. 2048 is just the beginning (keep going, champ)
+8. Dark mode + 2AM = *chef's kiss*
 
 ## 🎯 Goal
 

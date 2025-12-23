@@ -268,7 +268,12 @@ class Game2048 {
             this.lockedTiles = this.lockedTiles.filter(tile => {
                 tile.movesRemaining--;
                 if (tile.movesRemaining <= 0) {
-                    this.showMessage(`Tile at (${tile.row + 1}, ${tile.col + 1}) unlocked!`, 'info');\n                    return false;\n                }\n                return true;\n            });\n        }
+                    this.showMessage(`Tile at (${tile.row + 1}, ${tile.col + 1}) unlocked!`, 'info');
+                    return false;
+                }
+                return true;
+            });
+        }
         
         return moved;
     }
