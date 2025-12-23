@@ -148,6 +148,9 @@ class Game2048 {
         
         this.lockedTiles = [];
         
+        // Reset to default theme on new game
+        this.switchTheme('default');
+        
         this.updateScore();
         this.updatePowerupCounts();
         this.updateGameStatus('');
@@ -1648,7 +1651,8 @@ class Game2048 {
     }
 
     switchTheme(themeName) {
-        if (!this.themes[themeName] || !this.themes[themeName].unlocked) {
+        // Allow switching to default theme always, check unlock for others
+        if (themeName !== 'default' && (!this.themes[themeName] || !this.themes[themeName].unlocked)) {
             console.log('Theme not unlocked:', themeName);
             return;
         }
@@ -1658,7 +1662,9 @@ class Game2048 {
         
         // Add new theme class
         this.currentTheme = themeName;
-        document.body.classList.add(`theme-${themeName}`);
+        if (themeName !== 'default') {
+            document.body.classList.add(`theme-${themeName}`);
+        }
         
         // Save preference
         this.saveThemeProgress();
