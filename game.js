@@ -33,10 +33,39 @@ class Game2048 {
         this.touchStartX = 0;
         this.touchStartY = 0;
         
+        // Theme System
+        this.currentTheme = 'default';
+        this.themes = {
+            default: { 
+                name: 'Dark Mode', 
+                unlocked: true,
+                description: 'Classic dark theme'
+            },
+            cyberpunk: { 
+                name: 'Neon Cyberpunk', 
+                unlockedAt: 1024, 
+                unlocked: false,
+                description: 'Pink/cyan neon aesthetic'
+            },
+            vaporwave: { 
+                name: 'Vaporwave', 
+                unlockedAt: 2048, 
+                unlocked: false,
+                description: 'Purple/pink retro vibes'
+            },
+            matrix: { 
+                name: 'Matrix', 
+                unlockedAt: 4096, 
+                unlocked: false,
+                description: 'Green terminal hacker mode'
+            }
+        };
+        
         this.init();
     }
     
     init() {
+        this.loadThemeProgress();
         this.setupGrid();
         this.setupEventListeners();
         this.updateBestScore();
@@ -552,6 +581,9 @@ class Game2048 {
     }
     
     checkForPowerupReward(mergedValue) {
+        // Check for theme unlocks
+        this.checkThemeUnlock(mergedValue);
+        
         // Award powerups based on tile values created
         let reward = null;
         
@@ -1536,6 +1568,130 @@ class Game2048 {
                     
                     container.appendChild(tile);
                 }
+            }
+        }
+    }
+    
+    // ===== THEME SYSTEM =====
+    checkThemeUnlock(tileValue) {
+        for (const [themeKey, theme] of Object.entries(this.themes)) {
+            if (theme.unlockedAt === tileValue && !theme.unlocked) {
+                this.unlockTheme(themeKey);
+            }
+        }
+    }
+
+    unlockTheme(themeName) {
+        if (!this.themes[themeName]) return;
+        
+        this.themes[themeName].unlocked = true;
+        this.saveThemeProgress();
+        
+        // Show unlock notification
+        this.showThemeUnlockNotification(themeName);
+        
+        // Show theme selector if hidden
+        const themeSelector = document.getElementById('theme-selector');
+        if (themeSelector && themeSelector.style.display === 'none') {
+            themeSelector.style.display = 'block';
+        }
+        
+        // Auto-switch to newly unlocked theme
+        this.switchTheme(themeName);
+    }
+
+    switchTheme(themeName) {
+        if (!this.themes[themeName] || !this.themes[themeName].unlocked) {
+            console.log('Theme not unlocked:', themeName);
+            return;
+        }
+        
+        // Remove old theme class
+        document.body.classList.remove(`theme-${this.currentTheme}`);
+        
+        // Add new theme class
+        this.currentTheme = themeName;
+        document.body.classList.add(`theme-${themeName}`);
+        
+        // Save preference
+        this.saveThemeProgress();
+        
+        // Update UI selector
+        const themeButtons = document.querySelectorAll('.theme-button');
+        themeButtons.forEach(btn => {
+            if (btn.dataset.theme === themeName) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
+
+    showThemeUnlockNotification(themeName) {
+        const theme = this.themes[themeName];
+        const notification = document.createElement('div');
+        notification.className = 'theme-unlock-notification';
+        notification.innerHTML = `
+            <div class="notification-content">
+                <div class="notification-title">🎨 NEW THEME UNLOCKED!</div>
+                <div class="notification-theme-name">${theme.name}</div>
+                <div class="notification-description">${theme.description}</div>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => notification.classList.add('show'), 100);
+        
+        // Remove after delay
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 500);
+        }, 4000);
+    }
+
+    saveThemeProgress() {
+        const themeData = {
+            currentTheme: this.currentTheme,
+            unlockedThemes: Object.entries(this.themes)
+                .filter(([key, theme]) => theme.unlocked)
+                .map(([key]) => key)
+        };
+        localStorage.setItem('gameThemes', JSON.stringify(themeData));
+    }
+
+    loadThemeProgress() {
+        const saved = localStorage.getItem('gameThemes');
+        if (saved) {
+            try {
+                const themeData = JSON.parse(saved);
+                
+                // Restore unlocked themes
+                if (themeData.unlockedThemes) {
+                    themeData.unlockedThemes.forEach(themeKey => {
+                        if (this.themes[themeKey]) {
+                            this.themes[themeKey].unlocked = true;
+                        }
+                    });
+                }
+                
+                // Restore current theme
+                if (themeData.currentTheme && this.themes[themeData.currentTheme]?.unlocked) {
+                    this.switchTheme(themeData.currentTheme);
+                }
+                
+                // Show theme selector if any theme is unlocked besides default
+                const hasUnlockedThemes = themeData.unlockedThemes.some(key => key !== 'default');
+                if (hasUnlockedThemes) {
+                    const themeSelector = document.getElementById('theme-selector');
+                    if (themeSelector) {
+                        themeSelector.style.display = 'block';
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error loading theme progress:', error);
             }
         }
     }

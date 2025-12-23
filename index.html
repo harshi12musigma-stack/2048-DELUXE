@@ -97,5 +97,19 @@
     </div>
 
     <script src="game.js"></script>
+    <script>
+        // Setup theme button listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeButtons = document.querySelectorAll('.theme-button');
+            themeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const themeName = button.dataset.theme;
+                    if (game && game.themes[themeName]?.unlocked) {
+                        game.switchTheme(themeName);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
