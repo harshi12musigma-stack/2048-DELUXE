@@ -652,8 +652,8 @@ class Game2048 {
         } else if (mergedValue === 4096) {
             // Epic reward for 4096!
             this.powerups.remove++;
-            this.powerups.boost++;
-            reward = { type: 'Remove + Boost', icon: '🌟' };
+            this.powerups.double++;
+            reward = { type: 'Remove + Double', icon: '🌟' };
         }
         
         if (reward) {
@@ -2020,4 +2020,4 @@ let game;
 document.addEventListener('DOMContentLoaded', () => {
     game = new Game2048();
 });
-});
+

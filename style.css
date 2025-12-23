@@ -680,21 +680,21 @@ body.theme-cyberpunk .score-label {
 
 body.theme-cyberpunk .score-value {
     color: #ff006e;
-    text-shadow: 0 0 10px #ff006e;
+    text-shadow: 0 0 5px rgba(255, 0, 110, 0.5);
 }
 
 body.theme-cyberpunk .grid-cell {
-    background: rgba(189, 0, 255, 0.2);
-    border: 2px solid rgba(255, 0, 110, 0.3);
-    box-shadow: inset 0 0 10px rgba(0, 245, 255, 0.2);
+    background: rgba(189, 0, 255, 0.1);
+    border: 2px solid rgba(255, 0, 110, 0.2);
+    box-shadow: inset 0 0 5px rgba(0, 245, 255, 0.1);
 }
 
 body.theme-cyberpunk .tile {
     background: linear-gradient(135deg, #ff006e, #bd00ff);
     border: 2px solid #00f5ff;
-    box-shadow: 0 0 20px rgba(255, 0, 110, 0.6), 0 4px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 10px rgba(255, 0, 110, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3);
     color: #ffffff;
-    text-shadow: 0 0 10px rgba(0, 245, 255, 0.8);
+    text-shadow: 0 0 5px rgba(0, 245, 255, 0.4);
 }
 
 body.theme-cyberpunk .tile-2 {
@@ -715,12 +715,12 @@ body.theme-cyberpunk .tile-16 {
 
 body.theme-cyberpunk .tile-32 {
     background: linear-gradient(135deg, #ff006e, #bd00ff);
-    box-shadow: 0 0 25px rgba(255, 0, 110, 0.8), 0 4px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 12px rgba(255, 0, 110, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 body.theme-cyberpunk .tile-64 {
     background: linear-gradient(135deg, #00f5ff, #ff006e);
-    box-shadow: 0 0 30px rgba(0, 245, 255, 0.8), 0 4px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 15px rgba(0, 245, 255, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 body.theme-cyberpunk .tile-128,
@@ -729,38 +729,38 @@ body.theme-cyberpunk .tile-512,
 body.theme-cyberpunk .tile-1024,
 body.theme-cyberpunk .tile-2048 {
     background: linear-gradient(135deg, #ff006e, #bd00ff, #00f5ff);
-    box-shadow: 0 0 35px rgba(255, 0, 110, 1), 0 0 20px rgba(0, 245, 255, 0.8), 0 4px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 15px rgba(255, 0, 110, 0.5), 0 0 10px rgba(0, 245, 255, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3);
     animation: cyberpunkPulse 2s ease-in-out infinite;
 }
 
 @keyframes cyberpunkPulse {
     0%, 100% {
-        box-shadow: 0 0 35px rgba(255, 0, 110, 1), 0 0 20px rgba(0, 245, 255, 0.8);
+        box-shadow: 0 0 15px rgba(255, 0, 110, 0.5), 0 0 10px rgba(0, 245, 255, 0.4);
     }
     50% {
-        box-shadow: 0 0 50px rgba(255, 0, 110, 1), 0 0 35px rgba(0, 245, 255, 1);
+        box-shadow: 0 0 20px rgba(255, 0, 110, 0.6), 0 0 15px rgba(0, 245, 255, 0.5);
     }
 }
 
 body.theme-cyberpunk .powerup-item {
-    background: rgba(189, 0, 255, 0.3);
+    background: rgba(189, 0, 255, 0.2);
     border: 2px solid #ff006e;
-    box-shadow: 0 0 10px rgba(255, 0, 110, 0.4);
+    box-shadow: 0 0 5px rgba(255, 0, 110, 0.3);
 }
 
 body.theme-cyberpunk .powerup-item:hover:not(.disabled) {
-    background: rgba(255, 0, 110, 0.4);
-    box-shadow: 0 0 20px rgba(0, 245, 255, 0.6);
+    background: rgba(255, 0, 110, 0.3);
+    box-shadow: 0 0 10px rgba(0, 245, 255, 0.4);
 }
 
 body.theme-cyberpunk .btn {
     background: linear-gradient(135deg, #ff006e, #bd00ff);
     border: 2px solid #00f5ff;
-    box-shadow: 0 0 15px rgba(255, 0, 110, 0.5);
+    box-shadow: 0 0 8px rgba(255, 0, 110, 0.3);
 }
 
 body.theme-cyberpunk .btn:hover {
-    box-shadow: 0 0 25px rgba(0, 245, 255, 0.8);
+    box-shadow: 0 0 12px rgba(0, 245, 255, 0.5);
 }
 
 body.theme-cyberpunk .theme-selector {
@@ -789,9 +789,9 @@ body.theme-vaporwave::before {
 }
 
 body.theme-vaporwave .container {
-    background: rgba(255, 110, 199, 0.2);
-    border: 3px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 8px 32px rgba(185, 103, 255, 0.4);
+    background: rgba(255, 110, 199, 0.15);
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(185, 103, 255, 0.2);
     backdrop-filter: blur(10px);
     position: relative;
     z-index: 2;
@@ -828,8 +828,8 @@ body.theme-vaporwave .grid-cell {
 
 body.theme-vaporwave .tile {
     background: linear-gradient(135deg, #ff6ec7, #b967ff);
-    border: 2px solid rgba(255, 255, 255, 0.6);
-    box-shadow: 0 4px 15px rgba(185, 103, 255, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 10px rgba(185, 103, 255, 0.2);
     color: #ffffff;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
@@ -864,7 +864,7 @@ body.theme-vaporwave .tile-512,
 body.theme-vaporwave .tile-1024,
 body.theme-vaporwave .tile-2048 {
     background: linear-gradient(135deg, #ff6ec7, #b967ff, #ffb347);
-    box-shadow: 0 4px 20px rgba(255, 110, 199, 0.6), 0 0 30px rgba(185, 103, 255, 0.5);
+    box-shadow: 0 4px 12px rgba(255, 110, 199, 0.3), 0 0 15px rgba(185, 103, 255, 0.2);
     animation: vaporwaveGlow 3s ease-in-out infinite;
 }
 
@@ -873,7 +873,7 @@ body.theme-vaporwave .tile-2048 {
         filter: brightness(1);
     }
     50% {
-        filter: brightness(1.2);
+        filter: brightness(1.05);
     }
 }
 
@@ -936,7 +936,7 @@ body.theme-matrix::before {
 body.theme-matrix .container {
     background: rgba(0, 59, 0, 0.8);
     border: 2px solid #00ff41;
-    box-shadow: 0 0 20px rgba(0, 255, 65, 0.5), inset 0 0 20px rgba(0, 255, 65, 0.1);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3), inset 0 0 10px rgba(0, 255, 65, 0.05);
     position: relative;
     z-index: 2;
     padding: 0;
@@ -945,20 +945,20 @@ body.theme-matrix .container {
 body.theme-matrix h1 {
     color: #00ff41;
     font-family: 'Courier New', monospace;
-    text-shadow: 0 0 10px #00ff41, 0 0 20px #00ff41;
+    text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
 }
 
 body.theme-matrix .score-box {
     background: rgba(0, 59, 0, 0.7);
     border: 2px solid #00ff41;
-    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+    box-shadow: 0 0 5px rgba(0, 255, 65, 0.2);
 }
 
 body.theme-matrix .score-label,
 body.theme-matrix .score-value {
     color: #00ff41;
     font-family: 'Courier New', monospace;
-    text-shadow: 0 0 5px #00ff41;
+    text-shadow: 0 0 3px rgba(0, 255, 65, 0.4);
 }
 
 body.theme-matrix .grid-cell {
@@ -972,8 +972,8 @@ body.theme-matrix .tile {
     border: 1px solid #00ff41;
     color: #00ff41;
     font-family: 'Courier New', monospace;
-    text-shadow: 0 0 5px #00ff41;
-    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+    text-shadow: 0 0 3px rgba(0, 255, 65, 0.4);
+    box-shadow: 0 0 5px rgba(0, 255, 65, 0.2);
 }
 
 body.theme-matrix .tile-2 {
@@ -994,12 +994,12 @@ body.theme-matrix .tile-16 {
 
 body.theme-matrix .tile-32 {
     background: rgba(0, 139, 0, 0.9);
-    box-shadow: 0 0 15px rgba(0, 255, 65, 0.4);
+    box-shadow: 0 0 8px rgba(0, 255, 65, 0.25);
 }
 
 body.theme-matrix .tile-64 {
     background: rgba(0, 159, 0, 0.9);
-    box-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
 }
 
 body.theme-matrix .tile-128,
@@ -1008,25 +1008,25 @@ body.theme-matrix .tile-512,
 body.theme-matrix .tile-1024,
 body.theme-matrix .tile-2048 {
     background: rgba(0, 179, 0, 0.9);
-    box-shadow: 0 0 20px rgba(0, 255, 65, 0.8), 0 0 40px rgba(0, 255, 65, 0.4);
+    box-shadow: 0 0 12px rgba(0, 255, 65, 0.4), 0 0 20px rgba(0, 255, 65, 0.2);
     animation: matrixPulse 2s ease-in-out infinite;
 }
 
 @keyframes matrixPulse {
     0%, 100% {
-        text-shadow: 0 0 5px #00ff41;
-        box-shadow: 0 0 20px rgba(0, 255, 65, 0.8);
+        text-shadow: 0 0 3px rgba(0, 255, 65, 0.5);
+        box-shadow: 0 0 12px rgba(0, 255, 65, 0.4);
     }
     50% {
-        text-shadow: 0 0 10px #00ff41, 0 0 20px #00ff41;
-        box-shadow: 0 0 30px rgba(0, 255, 65, 1), 0 0 50px rgba(0, 255, 65, 0.5);
+        text-shadow: 0 0 5px rgba(0, 255, 65, 0.6);
+        box-shadow: 0 0 15px rgba(0, 255, 65, 0.5), 0 0 25px rgba(0, 255, 65, 0.3);
     }
 }
 
 body.theme-matrix .powerup-item {
     background: rgba(0, 59, 0, 0.7);
     border: 2px solid #00ff41;
-    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+    box-shadow: 0 0 5px rgba(0, 255, 65, 0.2);
     font-family: 'Courier New', monospace;
 }
 
