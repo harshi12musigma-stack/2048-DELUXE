@@ -690,37 +690,37 @@ body.theme-cyberpunk .grid-cell {
 }
 
 body.theme-cyberpunk .tile {
-    background: linear-gradient(135deg, #ff006e, #bd00ff);
-    border: 2px solid #00f5ff;
-    box-shadow: 0 0 10px rgba(255, 0, 110, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, #cc5587, #9955cc);
+    border: 2px solid #66b3cc;
+    box-shadow: 0 0 5px rgba(204, 85, 135, 0.15), 0 4px 8px rgba(0, 0, 0, 0.3);
     color: #ffffff;
-    text-shadow: 0 0 5px rgba(0, 245, 255, 0.4);
+    text-shadow: 0 0 3px rgba(102, 179, 204, 0.2);
 }
 
 body.theme-cyberpunk .tile-2 {
-    background: linear-gradient(135deg, #bd00ff, #ff006e);
+    background: linear-gradient(135deg, #9955cc, #cc5587);
 }
 
 body.theme-cyberpunk .tile-4 {
-    background: linear-gradient(135deg, #ff006e, #00f5ff);
+    background: linear-gradient(135deg, #cc5587, #66b3cc);
 }
 
 body.theme-cyberpunk .tile-8 {
-    background: linear-gradient(135deg, #00f5ff, #bd00ff);
+    background: linear-gradient(135deg, #66b3cc, #9955cc);
 }
 
 body.theme-cyberpunk .tile-16 {
-    background: linear-gradient(135deg, #bd00ff, #ff006e);
+    background: linear-gradient(135deg, #9955cc, #cc5587);
 }
 
 body.theme-cyberpunk .tile-32 {
-    background: linear-gradient(135deg, #ff006e, #bd00ff);
-    box-shadow: 0 0 12px rgba(255, 0, 110, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, #cc5587, #9955cc);
+    box-shadow: 0 0 5px rgba(204, 85, 135, 0.2), 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 body.theme-cyberpunk .tile-64 {
-    background: linear-gradient(135deg, #00f5ff, #ff006e);
-    box-shadow: 0 0 15px rgba(0, 245, 255, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, #66b3cc, #cc5587);
+    box-shadow: 0 0 5px rgba(102, 179, 204, 0.2), 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 body.theme-cyberpunk .tile-128,
@@ -728,17 +728,16 @@ body.theme-cyberpunk .tile-256,
 body.theme-cyberpunk .tile-512,
 body.theme-cyberpunk .tile-1024,
 body.theme-cyberpunk .tile-2048 {
-    background: linear-gradient(135deg, #ff006e, #bd00ff, #00f5ff);
-    box-shadow: 0 0 15px rgba(255, 0, 110, 0.5), 0 0 10px rgba(0, 245, 255, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3);
-    animation: cyberpunkPulse 2s ease-in-out infinite;
+    background: linear-gradient(135deg, #cc5587, #9955cc, #66b3cc);
+    box-shadow: 0 0 8px rgba(204, 85, 135, 0.25), 0 0 5px rgba(102, 179, 204, 0.2), 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 @keyframes cyberpunkPulse {
     0%, 100% {
-        box-shadow: 0 0 15px rgba(255, 0, 110, 0.5), 0 0 10px rgba(0, 245, 255, 0.4);
+        box-shadow: 0 0 8px rgba(204, 85, 135, 0.25), 0 0 5px rgba(102, 179, 204, 0.2);
     }
     50% {
-        box-shadow: 0 0 20px rgba(255, 0, 110, 0.6), 0 0 15px rgba(0, 245, 255, 0.5);
+        box-shadow: 0 0 10px rgba(204, 85, 135, 0.3), 0 0 7px rgba(102, 179, 204, 0.25);
     }
 }
 
@@ -827,35 +826,35 @@ body.theme-vaporwave .grid-cell {
 }
 
 body.theme-vaporwave .tile {
-    background: linear-gradient(135deg, #ff6ec7, #b967ff);
-    border: 2px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 4px 10px rgba(185, 103, 255, 0.2);
+    background: linear-gradient(135deg, #cc88aa, #9988cc);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 8px rgba(153, 136, 204, 0.15);
     color: #ffffff;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 body.theme-vaporwave .tile-2 {
-    background: linear-gradient(135deg, #ffb347, #ff6ec7);
+    background: linear-gradient(135deg, #ccaa88, #cc88aa);
 }
 
 body.theme-vaporwave .tile-4 {
-    background: linear-gradient(135deg, #b967ff, #ffb347);
+    background: linear-gradient(135deg, #9988cc, #ccaa88);
 }
 
 body.theme-vaporwave .tile-8 {
-    background: linear-gradient(135deg, #ff6ec7, #b967ff);
+    background: linear-gradient(135deg, #cc88aa, #9988cc);
 }
 
 body.theme-vaporwave .tile-16 {
-    background: linear-gradient(135deg, #ffb347, #b967ff);
+    background: linear-gradient(135deg, #ccaa88, #9988cc);
 }
 
 body.theme-vaporwave .tile-32 {
-    background: linear-gradient(135deg, #ff6ec7, #ffb347);
+    background: linear-gradient(135deg, #cc88aa, #ccaa88);
 }
 
 body.theme-vaporwave .tile-64 {
-    background: linear-gradient(135deg, #b967ff, #ff6ec7);
+    background: linear-gradient(135deg, #9988cc, #cc88aa);
 }
 
 body.theme-vaporwave .tile-128,
@@ -863,9 +862,8 @@ body.theme-vaporwave .tile-256,
 body.theme-vaporwave .tile-512,
 body.theme-vaporwave .tile-1024,
 body.theme-vaporwave .tile-2048 {
-    background: linear-gradient(135deg, #ff6ec7, #b967ff, #ffb347);
-    box-shadow: 0 4px 12px rgba(255, 110, 199, 0.3), 0 0 15px rgba(185, 103, 255, 0.2);
-    animation: vaporwaveGlow 3s ease-in-out infinite;
+    background: linear-gradient(135deg, #cc88aa, #9988cc, #ccaa88);
+    box-shadow: 0 4px 10px rgba(204, 136, 170, 0.2), 0 0 8px rgba(153, 136, 204, 0.15);
 }
 
 @keyframes vaporwaveGlow {
@@ -873,7 +871,7 @@ body.theme-vaporwave .tile-2048 {
         filter: brightness(1);
     }
     50% {
-        filter: brightness(1.05);
+        filter: brightness(1.02);
     }
 }
 
@@ -969,11 +967,11 @@ body.theme-matrix .grid-cell {
 
 body.theme-matrix .tile {
     background: rgba(0, 59, 0, 0.9);
-    border: 1px solid #00ff41;
-    color: #00ff41;
+    border: 1px solid #66cc77;
+    color: #66cc77;
     font-family: 'Courier New', monospace;
-    text-shadow: 0 0 3px rgba(0, 255, 65, 0.4);
-    box-shadow: 0 0 5px rgba(0, 255, 65, 0.2);
+    text-shadow: 0 0 2px rgba(102, 204, 119, 0.2);
+    box-shadow: 0 0 3px rgba(102, 204, 119, 0.15);
 }
 
 body.theme-matrix .tile-2 {
@@ -994,12 +992,12 @@ body.theme-matrix .tile-16 {
 
 body.theme-matrix .tile-32 {
     background: rgba(0, 139, 0, 0.9);
-    box-shadow: 0 0 8px rgba(0, 255, 65, 0.25);
+    box-shadow: 0 0 4px rgba(102, 204, 119, 0.2);
 }
 
 body.theme-matrix .tile-64 {
     background: rgba(0, 159, 0, 0.9);
-    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+    box-shadow: 0 0 5px rgba(102, 204, 119, 0.2);
 }
 
 body.theme-matrix .tile-128,
@@ -1008,18 +1006,17 @@ body.theme-matrix .tile-512,
 body.theme-matrix .tile-1024,
 body.theme-matrix .tile-2048 {
     background: rgba(0, 179, 0, 0.9);
-    box-shadow: 0 0 12px rgba(0, 255, 65, 0.4), 0 0 20px rgba(0, 255, 65, 0.2);
-    animation: matrixPulse 2s ease-in-out infinite;
+    box-shadow: 0 0 6px rgba(102, 204, 119, 0.25), 0 0 10px rgba(102, 204, 119, 0.15);
 }
 
 @keyframes matrixPulse {
     0%, 100% {
-        text-shadow: 0 0 3px rgba(0, 255, 65, 0.5);
-        box-shadow: 0 0 12px rgba(0, 255, 65, 0.4);
+        text-shadow: 0 0 2px rgba(102, 204, 119, 0.3);
+        box-shadow: 0 0 6px rgba(102, 204, 119, 0.25);
     }
     50% {
-        text-shadow: 0 0 5px rgba(0, 255, 65, 0.6);
-        box-shadow: 0 0 15px rgba(0, 255, 65, 0.5), 0 0 25px rgba(0, 255, 65, 0.3);
+        text-shadow: 0 0 3px rgba(102, 204, 119, 0.4);
+        box-shadow: 0 0 8px rgba(102, 204, 119, 0.3), 0 0 12px rgba(102, 204, 119, 0.2);
     }
 }
 
