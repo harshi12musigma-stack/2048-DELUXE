@@ -1024,14 +1024,23 @@ class Game2048 {
     
     selectDoubleTile(row, col) {
         const oldValue = this.grid[row][col];
-        this.grid[row][col] = oldValue * 2;
+        const newValue = oldValue * 2;
+        this.grid[row][col] = newValue;
+        
+        // Check for theme unlocks and powerup rewards
+        this.checkForPowerupReward(newValue);
+        
+        // Check for victory if doubled to 2048
+        if (newValue === 2048 && !this.won) {
+            this.showVictory();
+        }
         
         this.doubleMode = false;
         this.selectionMode = false;
         this.hideSelectionOverlay();
         this.render();
         this.saveGame();
-        this.showMessage(`Doubled ${oldValue} to ${oldValue * 2}! ✨`, 'success');
+        this.showMessage(`Doubled ${oldValue} to ${newValue}! ✨`, 'success');
     }
     
     cancelDouble() {
