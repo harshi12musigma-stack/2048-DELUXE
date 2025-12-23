@@ -7,7 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>2048 DELUXE - The Ultimate Edition</title>
-    <link rel="stylesheet" href="style.css?v=1734962000">
+    <link rel="stylesheet" href="style.css?v=1734963000">
 </head>
 <body>
     <div class="container">
@@ -68,6 +68,32 @@
             </div>
         </div>
 
+        <!-- Theme Selector -->
+        <div class="theme-selector" id="theme-selector" style="display: none;">
+            <h3>🎨 Themes</h3>
+            <div class="theme-buttons">
+                <button class="theme-button" data-theme="default">
+                    <span class="theme-icon">🌟</span>
+                    <span class="theme-name">Default</span>
+                </button>
+                <button class="theme-button locked" data-theme="cyberpunk">
+                    <span class="theme-icon">🌆</span>
+                    <span class="theme-name">Cyberpunk</span>
+                    <span class="lock-icon">🔒</span>
+                </button>
+                <button class="theme-button locked" data-theme="vaporwave">
+                    <span class="theme-icon">🌊</span>
+                    <span class="theme-name">Vaporwave</span>
+                    <span class="lock-icon">🔒</span>
+                </button>
+                <button class="theme-button locked" data-theme="matrix">
+                    <span class="theme-icon">💚</span>
+                    <span class="theme-name">Matrix</span>
+                    <span class="lock-icon">🔒</span>
+                </button>
+            </div>
+        </div>
+
         <!-- Game Board -->
         <div class="game-container">
             <div class="grid-container" id="grid-container"></div>
@@ -100,7 +126,7 @@
         </div>
     </div>
 
-    <script src="game.js?v=1734962000"></script>
+    <script src="game.js?v=1734963000"></script>
     <script>
         // Setup theme button listeners
         document.addEventListener('DOMContentLoaded', () => {

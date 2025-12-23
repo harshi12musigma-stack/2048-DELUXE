@@ -1502,12 +1502,17 @@ class Game2048 {
             const countEl = document.getElementById(key + '-count');
             const btnEl = document.getElementById(key + '-btn');
             
-            countEl.textContent = value;
+            // Defensive null checks
+            if (countEl) {
+                countEl.textContent = value;
+            }
             
-            if (value <= 0) {
-                btnEl.classList.add('disabled');
-            } else {
-                btnEl.classList.remove('disabled');
+            if (btnEl) {
+                if (value <= 0) {
+                    btnEl.classList.add('disabled');
+                } else {
+                    btnEl.classList.remove('disabled');
+                }
             }
         }
     }
