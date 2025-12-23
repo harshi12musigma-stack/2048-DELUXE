@@ -657,6 +657,7 @@ body.theme-cyberpunk .container {
     background: rgba(26, 0, 51, 0.9);
     border: 2px solid #ff006e;
     box-shadow: 0 0 30px rgba(255, 0, 110, 0.4), 0 0 60px rgba(0, 245, 255, 0.3);
+    padding: 0;
 }
 
 body.theme-cyberpunk h1 {
@@ -792,6 +793,7 @@ body.theme-vaporwave .container {
     backdrop-filter: blur(10px);
     position: relative;
     z-index: 2;
+    padding: 0;
 }
 
 body.theme-vaporwave h1 {
@@ -935,6 +937,7 @@ body.theme-matrix .container {
     box-shadow: 0 0 20px rgba(0, 255, 65, 0.5), inset 0 0 20px rgba(0, 255, 65, 0.1);
     position: relative;
     z-index: 2;
+    padding: 0;
 }
 
 body.theme-matrix h1 {
