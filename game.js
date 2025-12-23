@@ -1661,7 +1661,7 @@ class Game2048 {
             themeButton.classList.add('active');
             const lockIcon = themeButton.querySelector('.lock-icon');
             if (lockIcon) {
-                lockIcon.style.display = 'none';
+                lockIcon.remove(); // Remove the lock icon completely
             }
         }
         
@@ -1766,7 +1766,7 @@ class Game2048 {
                                 themeButton.classList.remove('locked');
                                 const lockIcon = themeButton.querySelector('.lock-icon');
                                 if (lockIcon) {
-                                    lockIcon.style.display = 'none';
+                                    lockIcon.remove(); // Remove the lock icon completely
                                 }
                             }
                         }
