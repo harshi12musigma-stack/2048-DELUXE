@@ -72,11 +72,51 @@ python3 -m http.server 8000
 7. 2048 is just the beginning (keep going, champ)
 8. Dark mode + 2AM = *chef's kiss*
 
+## � Theme System
+
+Unlock stunning visual themes by reaching milestone tiles!
+
+### Available Themes:
+
+| Theme | Unlock Tile | Description | Aesthetic |
+|-------|-------------|-------------|-----------|
+| 🌙 **Dark Mode** | Always Unlocked | Classic dark theme | Blue-gray minimalist |
+| 🌆 **Neon Cyberpunk** | **1024** | Pink/cyan neon glow | Futuristic neon city |
+| 🌸 **Vaporwave** | **2048** | Purple/pink sunset | 80s retro aesthetic |
+| 💚 **Matrix** | **4096** | Green terminal | Hacker code rain |
+
+### How It Works:
+
+1. **Create the milestone tile** (1024, 2048, or 4096)
+2. **🎨 NEW THEME UNLOCKED!** notification appears
+3. **Theme automatically switches** to the new unlock
+4. **Theme selector appears** in the UI
+5. **Click any unlocked theme** to switch anytime
+6. **Your preference is saved** across sessions
+
+### Theme Features:
+
+- ✨ **Smooth transitions** between themes
+- 💾 **Persistent storage** - themes stay unlocked
+- 🎭 **Unique aesthetics** - each theme completely transforms the UI
+- 🔓 **Progressive unlocks** - keep playing to see them all!
+- 🎯 **Visual rewards** - celebrate your achievements with style
+
 ## 🎯 Goal
 
 Reach 2048. Or 4096. Or 8192. We believe in you.
 
 Actually, just have fun. Numbers are temporary, vibes are eternal. ✌️
+
+## ⚙️ Additional Features
+
+- 💾 **Auto-save**: Game state persists across browser sessions
+- 📱 **Touch controls**: Swipe to play on mobile devices
+- ⌨️ **Keyboard controls**: Arrow keys or WASD
+- 🎯 **Best score tracking**: Your highest score is always saved
+- 🔄 **Undo from Game Over**: Second chances when you need them
+- ⚠️ **New Game confirmation**: Prevents accidental progress loss
+- 🎨 **Theme persistence**: Your theme preference is remembered
 
 ## 📝 Tech Stack
 

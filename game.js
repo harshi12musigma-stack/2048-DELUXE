@@ -97,7 +97,7 @@ class Game2048 {
         document.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: false });
         
         // Button controls
-        document.getElementById('new-game').addEventListener('click', () => this.newGame());
+        document.getElementById('new-game').addEventListener('click', () => this.confirmNewGame());
         document.getElementById('modal-new-game').addEventListener('click', () => {
             this.closeModal();
             this.newGame();
@@ -113,6 +113,16 @@ class Game2048 {
         document.getElementById('remove-btn').addEventListener('click', () => this.usePowerup('remove'));
         document.getElementById('lock-btn').addEventListener('click', () => this.usePowerup('lock'));
         document.getElementById('double-btn').addEventListener('click', () => this.usePowerup('double'));
+    }
+    
+    confirmNewGame() {
+        if (this.score > 0) {
+            const confirmed = confirm('⚠️ Start a new game?\n\nYour current progress will be lost!\n\nScore: ' + this.score);
+            if (!confirmed) {
+                return;
+            }
+        }
+        this.newGame();
     }
     
     newGame() {
