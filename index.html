@@ -29,6 +29,9 @@
                 <button class="achievement-btn" onclick="game.toggleAchievements()" title="View Achievements">
                     🏆 <span id="achievement-count">0/7</span>
                 </button>
+                <button class="stats-btn" onclick="game.toggleStatistics()" title="View Statistics">
+                    📊
+                </button>
             </div>
         </div>
 
@@ -138,6 +141,89 @@
             </div>
             <div id="achievements-list" class="achievements-list">
                 <!-- Achievement cards will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Modal -->
+    <div id="statistics-modal" class="modal">
+        <div class="modal-content statistics-modal">
+            <div class="modal-header">
+                <h2>📊 Statistics</h2>
+                <button class="modal-close" onclick="game.toggleStatistics()">×</button>
+            </div>
+            
+            <div class="stats-grid">
+                <!-- Game Statistics -->
+                <div class="stat-section">
+                    <h3>🎮 Game Stats</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Games Played</span>
+                        <span class="stat-value" id="stat-games-played">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Games Won</span>
+                        <span class="stat-value" id="stat-games-won">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Win Rate</span>
+                        <span class="stat-value" id="stat-win-rate">0%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Current Streak</span>
+                        <span class="stat-value" id="stat-current-streak">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Longest Streak</span>
+                        <span class="stat-value" id="stat-longest-streak">0</span>
+                    </div>
+                </div>
+
+                <!-- Score Statistics -->
+                <div class="stat-section">
+                    <h3>🎯 Score Stats</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Score</span>
+                        <span class="stat-value" id="stat-total-score">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Average Score</span>
+                        <span class="stat-value" id="stat-average-score">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Highest Tile</span>
+                        <span class="stat-value" id="stat-highest-tile">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Moves</span>
+                        <span class="stat-value" id="stat-total-moves">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Merges</span>
+                        <span class="stat-value" id="stat-total-merges">0</span>
+                    </div>
+                </div>
+
+                <!-- Powerup & Time Statistics -->
+                <div class="stat-section">
+                    <h3>⚡ Powerup & Time</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Powerups Used</span>
+                        <span class="stat-value" id="stat-total-powerups">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Play Time</span>
+                        <span class="stat-value" id="stat-play-time">0s</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Fastest Win</span>
+                        <span class="stat-value" id="stat-fastest-win">N/A</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats-footer">
+                <button class="btn btn-danger" onclick="game.resetStatistics()">Reset Statistics</button>
             </div>
         </div>
     </div>

@@ -1090,6 +1090,29 @@ body.theme-matrix .theme-label {
     transform: translateY(0);
 }
 
+/* Statistics Button in Header */
+.stats-btn {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    padding: 10px 20px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+    margin-left: 10px;
+}
+
+.stats-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 87, 108, 0.5);
+}
+
+.stats-btn:active {
+    transform: translateY(0);
+}
+
 /* Achievement Modal */
 .achievements-modal {
     max-width: 600px;
@@ -1246,6 +1269,11 @@ body.theme-matrix .theme-label {
         font-size: 14px;
     }
     
+    .stats-btn {
+        padding: 8px 15px;
+        font-size: 18px;
+    }
+    
     .achievement-notification {
         width: 90%;
         max-width: 350px;
@@ -1258,5 +1286,119 @@ body.theme-matrix .theme-label {
     
     .achievements-modal {
         max-width: 95%;
+    }
+}
+
+/* ============================================
+   STATISTICS DASHBOARD STYLES
+   ============================================ */
+
+/* Statistics Modal */
+.statistics-modal {
+    max-width: 800px;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+/* Statistics Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+/* Stat Section */
+.stat-section {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stat-section h3 {
+    margin: 0 0 15px 0;
+    font-size: 18px;
+    color: #333;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 10px;
+}
+
+/* Individual Stat Item */
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.stat-item:last-child {
+    border-bottom: none;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    min-width: 80px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Stats Footer */
+.stats-footer {
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+    border-top: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5);
+}
+
+.btn-danger:active {
+    transform: translateY(0);
+}
+
+/* Responsive Statistics */
+@media (max-width: 768px) {
+    .statistics-modal {
+        max-width: 95%;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .stat-section {
+        padding: 15px;
+    }
+    
+    .stat-value {
+        font-size: 16px;
+        min-width: 60px;
     }
 }

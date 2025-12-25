@@ -138,12 +138,32 @@ class Game2048 {
             swapUses: 0
         };
         
+        // Global Statistics
+        this.globalStats = {
+            totalGamesPlayed: 0,
+            totalGamesWon: 0,
+            totalScore: 0,
+            totalMoves: 0,
+            totalTilesMerged: 0,
+            totalPowerupsUsed: 0,
+            highestTile: 0,
+            fastestWin: Infinity,
+            longestStreak: 0,
+            currentStreak: 0,
+            totalPlayTime: 0,
+            averageScore: 0,
+            winRate: 0
+        };
+        
+        this.gameStartTime = null;
+        
         this.init();
     }
     
     init() {
         this.loadThemeProgress();
         this.loadAchievements();
+        this.loadStatistics();
         this.setupGrid();
         this.setupParticleSystem();
         this.setupEventListeners();
@@ -234,6 +254,9 @@ class Game2048 {
             currentGameUsedUndo: false,
             currentGameUsedRemove: false
         };
+        
+        // Track game start time
+        this.gameStartTime = Date.now();
         
         // Reset to default theme on new game
         this.switchTheme('default');
@@ -565,6 +588,7 @@ class Game2048 {
                     const newValue = col[i] * 2;
                     merged.unshift(newValue);
                     this.score += newValue;
+                    this.globalStats.totalTilesMerged++;
                     this.checkForPowerupReward(newValue);
                     
                     // Emit particles at merge position (bottom)
@@ -2359,6 +2383,203 @@ Object.assign(Game2048.prototype, {
             this.updateAchievementUI();
             modal.style.display = 'flex';
         }
+    }
+});
+
+// Statistics System Extension for Game2048
+Object.assign(Game2048.prototype, {
+    // Load statistics from localStorage
+    loadStatistics() {
+        const saved = localStorage.getItem('2048_statistics');
+        if (saved) {
+            try {
+                const data = JSON.parse(saved);
+                this.globalStats = { ...this.globalStats, ...data };
+                this.calculateDerivedStats();
+            } catch (e) {
+                console.error('Failed to load statistics:', e);
+            }
+        }
+    },
+    
+    // Save statistics to localStorage
+    saveStatistics() {
+        this.calculateDerivedStats();
+        localStorage.setItem('2048_statistics', JSON.stringify(this.globalStats));
+    },
+    
+    // Calculate derived statistics
+    calculateDerivedStats() {
+        if (this.globalStats.totalGamesPlayed > 0) {
+            this.globalStats.averageScore = Math.round(
+                this.globalStats.totalScore / this.globalStats.totalGamesPlayed
+            );
+            this.globalStats.winRate = Math.round(
+                (this.globalStats.totalGamesWon / this.globalStats.totalGamesPlayed) * 100
+            );
+        }
+    },
+    
+    // Update statistics when game ends
+    updateGameStatistics(won) {
+        // Calculate game duration
+        const gameDuration = this.gameStartTime ? Date.now() - this.gameStartTime : 0;
+        
+        // Update global stats
+        this.globalStats.totalGamesPlayed++;
+        if (won) {
+            this.globalStats.totalGamesWon++;
+            
+            // Update streak
+            this.globalStats.currentStreak++;
+            if (this.globalStats.currentStreak > this.globalStats.longestStreak) {
+                this.globalStats.longestStreak = this.globalStats.currentStreak;
+            }
+            
+            // Update fastest win (in seconds)
+            const durationSeconds = Math.floor(gameDuration / 1000);
+            if (durationSeconds < this.globalStats.fastestWin) {
+                this.globalStats.fastestWin = durationSeconds;
+            }
+        } else {
+            // Reset streak on loss
+            this.globalStats.currentStreak = 0;
+        }
+        
+        // Update cumulative stats
+        this.globalStats.totalScore += this.score;
+        this.globalStats.totalMoves += this.stats.currentGameMoves;
+        this.globalStats.totalPowerupsUsed += this.stats.currentGamePowerupsUsed;
+        this.globalStats.totalPlayTime += Math.floor(gameDuration / 1000);
+        
+        // Update highest tile
+        const maxTile = Math.max(...this.grid.flat());
+        if (maxTile > this.globalStats.highestTile) {
+            this.globalStats.highestTile = maxTile;
+        }
+        
+        // Save to localStorage
+        this.saveStatistics();
+    },
+    
+    // Format time duration
+    formatDuration(seconds) {
+        if (seconds === Infinity) return 'N/A';
+        
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        
+        if (hours > 0) {
+            return `${hours}h ${minutes}m ${secs}s`;
+        } else if (minutes > 0) {
+            return `${minutes}m ${secs}s`;
+        } else {
+            return `${secs}s`;
+        }
+    },
+    
+    // Format large numbers with commas
+    formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    },
+    
+    // Update statistics UI
+    updateStatisticsUI() {
+        const stats = this.globalStats;
+        
+        // Update stat values with animation
+        this.animateStatValue('stat-games-played', stats.totalGamesPlayed);
+        this.animateStatValue('stat-games-won', stats.totalGamesWon);
+        this.animateStatValue('stat-win-rate', stats.winRate, '%');
+        this.animateStatValue('stat-total-score', stats.totalScore);
+        this.animateStatValue('stat-average-score', stats.averageScore);
+        this.animateStatValue('stat-total-moves', stats.totalMoves);
+        this.animateStatValue('stat-total-merges', stats.totalTilesMerged);
+        this.animateStatValue('stat-total-powerups', stats.totalPowerupsUsed);
+        this.animateStatValue('stat-highest-tile', stats.highestTile);
+        this.animateStatValue('stat-current-streak', stats.currentStreak);
+        this.animateStatValue('stat-longest-streak', stats.longestStreak);
+        
+        // Update time stats
+        const fastestEl = document.getElementById('stat-fastest-win');
+        if (fastestEl) {
+            fastestEl.textContent = this.formatDuration(stats.fastestWin);
+        }
+        
+        const playTimeEl = document.getElementById('stat-play-time');
+        if (playTimeEl) {
+            playTimeEl.textContent = this.formatDuration(stats.totalPlayTime);
+        }
+    },
+    
+    // Animate stat value counting up
+    animateStatValue(elementId, targetValue, suffix = '') {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+        
+        const startValue = parseInt(element.textContent.replace(/,/g, '')) || 0;
+        const duration = 1000;
+        const startTime = performance.now();
+        
+        const animate = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Easing function (ease-out)
+            const easeOut = 1 - Math.pow(1 - progress, 3);
+            const currentValue = Math.floor(startValue + (targetValue - startValue) * easeOut);
+            
+            element.textContent = this.formatNumber(currentValue) + suffix;
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                element.textContent = this.formatNumber(targetValue) + suffix;
+            }
+        };
+        
+        requestAnimationFrame(animate);
+    },
+    
+    // Toggle statistics modal
+    toggleStatistics() {
+        const modal = document.getElementById('statistics-modal');
+        if (!modal) return;
+        
+        if (modal.style.display === 'flex') {
+            modal.style.display = 'none';
+        } else {
+            this.updateStatisticsUI();
+            modal.style.display = 'flex';
+        }
+    },
+    
+    // Reset statistics (with confirmation)
+    resetStatistics() {
+        if (!confirm('Are you sure you want to reset all statistics? This cannot be undone!')) {
+            return;
+        }
+        
+        this.globalStats = {
+            totalGamesPlayed: 0,
+            totalGamesWon: 0,
+            totalScore: 0,
+            totalMoves: 0,
+            totalTilesMerged: 0,
+            totalPowerupsUsed: 0,
+            highestTile: 0,
+            fastestWin: Infinity,
+            longestStreak: 0,
+            currentStreak: 0,
+            totalPlayTime: 0,
+            averageScore: 0,
+            winRate: 0
+        };
+        
+        this.saveStatistics();
+        this.updateStatisticsUI();
+        this.showMessage('Statistics reset!', 'success');
     }
 });
 
