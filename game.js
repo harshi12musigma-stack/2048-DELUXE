@@ -121,6 +121,15 @@ class Game2048 {
                 icon: '💎',
                 requirement: { type: 'noPowerup', target: 4096, powerup: 'remove' },
                 unlocked: false
+            },
+            secretHunter: {
+                id: 'secretHunter',
+                name: 'Secret Hunter',
+                description: 'Discover all hidden secrets',
+                icon: '🔍',
+                requirement: { type: 'secrets', target: 3 },
+                unlocked: false,
+                hidden: true // Hidden achievement!
             }
         };
         
@@ -162,6 +171,16 @@ class Game2048 {
         this.soundEnabled = true;
         this.masterVolume = 0.3;
         
+        // Easter Eggs
+        this.konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+        this.konamiProgress = [];
+        this.devConsoleEnabled = false;
+        this.secretsUnlocked = {
+            konami: false,
+            devConsole: false,
+            mega: false // For reaching 8192+
+        };
+        
         this.init();
     }
     
@@ -172,6 +191,8 @@ class Game2048 {
         this.loadStatistics();
         this.loadSoundSettings();
         this.initAudioContext();
+        this.initEasterEggs();
+        this.showConsoleArt();
         this.setupGrid();
         this.setupParticleSystem();
         this.setupEventListeners();
@@ -1655,6 +1676,9 @@ class Game2048 {
             this.updateBestScore();
         }
         
+        // Check for mega secret (8192+ tiles)
+        this.checkMegaSecret();
+        
         // Animate score increase
         const scoreAddition = document.getElementById('score-addition');
         if (this.history.length > 0) {
@@ -2896,6 +2920,237 @@ Object.assign(Game2048.prototype, {
             this.updateSoundUI();
             modal.style.display = 'flex';
         }
+    }
+
+    // ==========================================
+    // EASTER EGGS & SECRETS SYSTEM
+    // ==========================================
+
+    initEasterEggs() {
+        // Konami Code listener
+        document.addEventListener('keydown', (e) => {
+            this.konamiProgress.push(e.key);
+            if (this.konamiProgress.length > this.konamiCode.length) {
+                this.konamiProgress.shift();
+            }
+            
+            if (JSON.stringify(this.konamiProgress) === JSON.stringify(this.konamiCode)) {
+                this.activateKonamiCode();
+                this.konamiProgress = [];
+            }
+        });
+
+        // Dev Console toggle (~ or ` key)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '~' || e.key === '`') {
+                e.preventDefault();
+                this.toggleDevConsole();
+            }
+        });
+
+        // Load secrets from localStorage
+        const saved = localStorage.getItem('2048-secrets');
+        if (saved) {
+            this.secretsUnlocked = JSON.parse(saved);
+        }
+    }
+
+    showConsoleArt() {
+        console.log(`
+%c╔═══════════════════════════════════════╗
+║                                       ║
+║        🎮  2048 DELUXE  🎮           ║
+║                                       ║
+║   The Ultimate 2048 Experience        ║
+║                                       ║
+║   💎 6 Powerups                       ║
+║   🎨 4 Themes                         ║
+║   🏆 8 Achievements                   ║
+║   🔊 Dynamic Sounds                   ║
+║   🎪 Secret Easter Eggs               ║
+║                                       ║
+║   Hint: Try the Konami Code... 🎮     ║
+║   Hint: Press ~ for dev tools... 🛠️   ║
+║                                       ║
+╚═══════════════════════════════════════╝
+`, 'color: #4a90e2; font-weight: bold; font-size: 12px;');
+
+        const tips = [
+            '💡 Tip: Use powerups wisely - they\'re your secret weapon!',
+            '💡 Tip: Unlock themes by reaching high scores!',
+            '💡 Tip: Try the 5x5 grid for an extra challenge!',
+            '💡 Tip: Check your statistics to track your progress!',
+            '💡 Tip: There are hidden secrets waiting to be discovered...'
+        ];
+        const randomTip = tips[Math.floor(Math.random() * tips.length)];
+        console.log(`%c${randomTip}`, 'color: #f5a623; font-style: italic;');
+    }
+
+    activateKonamiCode() {
+        if (this.secretsUnlocked.konami) {
+            this.showMessage('🎮 Konami Code already used! Try dev console (~) instead!');
+            return;
+        }
+
+        this.secretsUnlocked.konami = true;
+        this.saveSecrets();
+
+        // Grant 5 random powerups
+        const types = ['undo', 'swap', 'lock', 'shuffle', 'remove', 'double'];
+        const granted = [];
+        
+        for (let i = 0; i < 5; i++) {
+            const type = types[Math.floor(Math.random() * types.length)];
+            this.powerups[type]++;
+            granted.push(type);
+        }
+
+        // Special rainbow animation
+        document.body.style.animation = 'rainbow 2s ease-in-out';
+        setTimeout(() => {
+            document.body.style.animation = '';
+        }, 2000);
+
+        // Play special sound sequence
+        if (this.soundEnabled && this.audioContext) {
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+            notes.forEach((freq, i) => {
+                setTimeout(() => {
+                    this.playTone(freq, 150, 'square', 0.3);
+                }, i * 150);
+            });
+        }
+
+        this.showMessage(`🎮 KONAMI CODE ACTIVATED!\n🎁 Granted 5 random powerups!\n✨ ${granted.join(', ')}`);
+        console.log('%c🎮 KONAMI CODE ACTIVATED! 🎮', 'color: #ff6b6b; font-size: 20px; font-weight: bold;');
+        
+        this.updatePowerupUI();
+        this.checkSecretHunterAchievement();
+    }
+
+    toggleDevConsole() {
+        this.devConsoleEnabled = !this.devConsoleEnabled;
+        const consoleEl = document.getElementById('dev-console');
+        
+        if (this.devConsoleEnabled) {
+            if (!this.secretsUnlocked.devConsole) {
+                this.secretsUnlocked.devConsole = true;
+                this.saveSecrets();
+                console.log('%c🛠️ DEV CONSOLE UNLOCKED! 🛠️', 'color: #4ecdc4; font-size: 16px; font-weight: bold;');
+                this.checkSecretHunterAchievement();
+            }
+            consoleEl.classList.add('active');
+        } else {
+            consoleEl.classList.remove('active');
+        }
+    }
+
+    // Dev Console Actions
+    devAddPowerup(type) {
+        if (this.powerups.hasOwnProperty(type)) {
+            this.powerups[type] += 5;
+            this.updatePowerupUI();
+            this.showMessage(`🛠️ Added 5x ${type} powerups`);
+        }
+    }
+
+    devSetGridSize(size) {
+        this.gridSize = size;
+        this.resetGame();
+        this.showMessage(`🛠️ Grid size changed to ${size}x${size}`);
+    }
+
+    devUnlockTheme(theme) {
+        this.unlockedThemes.add(theme);
+        this.updateThemeUI();
+        this.showMessage(`🛠️ Unlocked ${theme} theme`);
+    }
+
+    devUnlockAllAchievements() {
+        Object.keys(this.achievements).forEach(key => {
+            if (!this.achievements[key].unlocked) {
+                this.achievements[key].unlocked = true;
+            }
+        });
+        this.saveAchievements();
+        this.updateAchievementUI();
+        this.showMessage('🛠️ Unlocked all achievements!');
+    }
+
+    devSpawnTile(value) {
+        const emptyCells = [];
+        for (let row = 0; row < this.gridSize; row++) {
+            for (let col = 0; col < this.gridSize; col++) {
+                if (this.grid[row][col] === 0) {
+                    emptyCells.push({ row, col });
+                }
+            }
+        }
+
+        if (emptyCells.length > 0) {
+            const { row, col } = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+            this.grid[row][col] = value;
+            this.updateGrid();
+            this.showMessage(`🛠️ Spawned ${value} tile`);
+        }
+    }
+
+    checkSecretHunterAchievement() {
+        const secretsFound = Object.values(this.secretsUnlocked).filter(v => v === true).length;
+        
+        if (secretsFound >= 3 && !this.achievements.secretHunter.unlocked) {
+            this.unlockAchievement('secretHunter');
+            
+            // Epic celebration for finding all secrets!
+            this.createConfetti();
+            if (this.soundEnabled && this.audioContext) {
+                // Play a special celebratory tune
+                const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50]; // C4-C6 scale
+                notes.forEach((freq, i) => {
+                    setTimeout(() => {
+                        this.playTone(freq, 200, 'sine', 0.4);
+                        if (i < notes.length - 1) {
+                            setTimeout(() => this.playTone(freq * 1.5, 100, 'triangle', 0.2), 50);
+                        }
+                    }, i * 150);
+                });
+            }
+        }
+    }
+
+    checkMegaSecret() {
+        // Check for 8192 or higher tiles
+        let hasMegaTile = false;
+        for (let row = 0; row < this.gridSize; row++) {
+            for (let col = 0; col < this.gridSize; col++) {
+                if (this.grid[row][col] >= 8192) {
+                    hasMegaTile = true;
+                    break;
+                }
+            }
+            if (hasMegaTile) break;
+        }
+
+        if (hasMegaTile && !this.secretsUnlocked.mega) {
+            this.secretsUnlocked.mega = true;
+            this.saveSecrets();
+            this.showMessage('🌟 MEGA SECRET UNLOCKED!\n✨ You\'ve reached legendary status!');
+            console.log('%c🌟 MEGA TILE MASTER! 🌟', 'color: #ffd700; font-size: 20px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);');
+            this.checkSecretHunterAchievement();
+            
+            // Add epic golden glow animation to mega tiles
+            const tiles = document.querySelectorAll('.tile');
+            tiles.forEach(tile => {
+                const value = parseInt(tile.dataset.value);
+                if (value >= 8192) {
+                    tile.style.animation = 'megaGlow 2s ease-in-out infinite';
+                }
+            });
+        }
+    }
+
+    saveSecrets() {
+        localStorage.setItem('2048-secrets', JSON.stringify(this.secretsUnlocked));
     }
 });
 

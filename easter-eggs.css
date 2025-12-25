@@ -1,0 +1,168 @@
+/* ========================================
+   EASTER EGGS & DEVELOPER CONSOLE
+   ======================================== */
+
+/* Dev Console */
+.dev-console {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, rgba(20, 20, 40, 0.98), rgba(30, 30, 60, 0.98));
+    border-radius: 20px;
+    padding: 0;
+    width: 600px;
+    max-width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    z-index: 10000;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 100px rgba(78, 205, 196, 0.2);
+    display: none;
+    border: 2px solid rgba(78, 205, 196, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.dev-console.active {
+    display: block;
+    animation: devConsoleSlideIn 0.3s ease-out;
+}
+
+.dev-console-header {
+    background: linear-gradient(135deg, #4ecdc4, #44a3e2);
+    padding: 20px;
+    border-radius: 18px 18px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dev-console-header h3 {
+    margin: 0;
+    font-size: 1.5em;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.dev-console-header .close-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.dev-console-header .close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+.dev-console-content {
+    padding: 20px;
+}
+
+.dev-section {
+    margin-bottom: 25px;
+}
+
+.dev-section h4 {
+    color: #4ecdc4;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+    border-bottom: 2px solid rgba(78, 205, 196, 0.3);
+    padding-bottom: 5px;
+}
+
+.dev-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.dev-buttons button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+}
+
+.dev-buttons button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
+}
+
+.dev-buttons button:active {
+    transform: translateY(0);
+}
+
+.dev-warning {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    border-radius: 8px;
+    padding: 10px;
+    color: #ffc107;
+    font-size: 0.9em;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Rainbow Animation for Konami Code */
+@keyframes rainbow {
+    0% { filter: hue-rotate(0deg); }
+    50% { filter: hue-rotate(180deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+/* Mega Glow Animation for 8192+ tiles */
+@keyframes megaGlow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.5),
+                    0 0 40px rgba(255, 215, 0, 0.3),
+                    0 0 60px rgba(255, 215, 0, 0.1);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.8),
+                    0 0 60px rgba(255, 215, 0, 0.5),
+                    0 0 90px rgba(255, 215, 0, 0.3);
+        transform: scale(1.05);
+    }
+}
+
+/* Dev Console Slide In Animation */
+@keyframes devConsoleSlideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .dev-console {
+        width: 95%;
+        max-height: 90vh;
+    }
+    
+    .dev-console-header h3 {
+        font-size: 1.2em;
+    }
+    
+    .dev-buttons button {
+        padding: 6px 12px;
+        font-size: 0.85em;
+    }
+}

@@ -8,6 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>2048 DELUXE - The Ultimate Edition</title>
     <link rel="stylesheet" href="style.css?v=1734970000">
+    <link rel="stylesheet" href="easter-eggs.css">
 </head>
 <body>
     <div class="container">
@@ -232,6 +233,66 @@
             
             <div class="stats-footer">
                 <button class="btn btn-danger" onclick="game.resetStatistics()">Reset Statistics</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dev Console (Easter Egg) -->
+    <div id="dev-console" class="dev-console">
+        <div class="dev-console-header">
+            <h3>🛠️ Developer Console</h3>
+            <button onclick="game.toggleDevConsole()" class="close-btn">×</button>
+        </div>
+        <div class="dev-console-content">
+            <div class="dev-section">
+                <h4>🎮 Powerups</h4>
+                <div class="dev-buttons">
+                    <button onclick="game.devAddPowerup('undo')">+5 Undo</button>
+                    <button onclick="game.devAddPowerup('swap')">+5 Swap</button>
+                    <button onclick="game.devAddPowerup('lock')">+5 Lock</button>
+                    <button onclick="game.devAddPowerup('shuffle')">+5 Shuffle</button>
+                    <button onclick="game.devAddPowerup('remove')">+5 Remove</button>
+                    <button onclick="game.devAddPowerup('double')">+5 Double</button>
+                </div>
+            </div>
+            
+            <div class="dev-section">
+                <h4>📐 Grid Size</h4>
+                <div class="dev-buttons">
+                    <button onclick="game.devSetGridSize(4)">4x4 Grid</button>
+                    <button onclick="game.devSetGridSize(5)">5x5 Grid</button>
+                    <button onclick="game.devSetGridSize(6)">6x6 Grid</button>
+                </div>
+            </div>
+            
+            <div class="dev-section">
+                <h4>🎨 Themes</h4>
+                <div class="dev-buttons">
+                    <button onclick="game.devUnlockTheme('cyberpunk')">Unlock Cyberpunk</button>
+                    <button onclick="game.devUnlockTheme('vaporwave')">Unlock Vaporwave</button>
+                    <button onclick="game.devUnlockTheme('matrix')">Unlock Matrix</button>
+                </div>
+            </div>
+            
+            <div class="dev-section">
+                <h4>🧪 Spawn Tiles</h4>
+                <div class="dev-buttons">
+                    <button onclick="game.devSpawnTile(1024)">Spawn 1024</button>
+                    <button onclick="game.devSpawnTile(2048)">Spawn 2048</button>
+                    <button onclick="game.devSpawnTile(4096)">Spawn 4096</button>
+                    <button onclick="game.devSpawnTile(8192)">Spawn 8192</button>
+                </div>
+            </div>
+            
+            <div class="dev-section">
+                <h4>🏆 Achievements</h4>
+                <div class="dev-buttons">
+                    <button onclick="game.devUnlockAllAchievements()">Unlock All Achievements</button>
+                </div>
+            </div>
+            
+            <div class="dev-warning">
+                ⚠️ Using dev tools may affect achievements and statistics
             </div>
         </div>
     </div>
