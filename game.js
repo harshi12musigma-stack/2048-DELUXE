@@ -1590,7 +1590,13 @@ class Game2048 {
     }
     
     updateGameStatus(message) {
-        document.getElementById('game-status').textContent = message;
+        const statusElement = document.getElementById('game-status');
+        statusElement.textContent = message;
+        if (message) {
+            statusElement.classList.add('show');
+        } else {
+            statusElement.classList.remove('show');
+        }
     }
     
     showMessage(message, type) {

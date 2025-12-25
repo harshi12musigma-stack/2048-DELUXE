@@ -203,6 +203,7 @@ body {
 }
 
 .game-status {
+    display: none; /* Hidden by default */
     color: #f9f6f2;
     font-weight: bold;
     font-size: 1.2em;
@@ -220,6 +221,10 @@ body {
     text-align: center;
     animation: messageSlideIn 0.3s ease-out;
     pointer-events: none; /* Don't block clicks */
+}
+
+.game-status.show {
+    display: block;
 }
 
 @keyframes messageSlideIn {
