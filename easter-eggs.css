@@ -2,6 +2,63 @@
    EASTER EGGS & DEVELOPER CONSOLE
    ======================================== */
 
+/* SECRET #1: Mega Tile Pulsing Glow Effect */
+/* Applied automatically to 8192+ tiles when mega secret is unlocked */
+@keyframes secretMegaPulse {
+    0%, 100% { 
+        filter: brightness(1) saturate(1);
+        transform: scale(1);
+    }
+    50% { 
+        filter: brightness(1.3) saturate(1.5);
+        transform: scale(1.02);
+    }
+}
+
+/* SECRET #2: Achievement Unlock Rainbow Effect */
+@keyframes achievementRainbow {
+    0% { filter: hue-rotate(0deg); }
+    25% { filter: hue-rotate(90deg); }
+    50% { filter: hue-rotate(180deg); }
+    75% { filter: hue-rotate(270deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+.achievement-card.just-unlocked {
+    animation: achievementRainbow 2s linear;
+}
+
+/* SECRET #3: Konami Code Power Glow */
+@keyframes konamiPowerGlow {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(0, 255, 255, 0.5),
+                    0 0 20px rgba(255, 0, 255, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.8),
+                    0 0 40px rgba(255, 0, 255, 0.6),
+                    0 0 60px rgba(255, 215, 0, 0.4);
+    }
+}
+
+.powerup-buttons.konami-activated {
+    animation: konamiPowerGlow 1s ease-in-out 3;
+}
+
+/* SECRET #4: Theme Unlock Sparkle */
+@keyframes themeSparkle {
+    0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+    50% { opacity: 1; transform: scale(1) rotate(180deg); }
+}
+
+.theme-btn.just-unlocked::after {
+    content: '✨';
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    animation: themeSparkle 1s ease-in-out 3;
+}
+
 /* Dev Console */
 .dev-console {
     position: fixed;

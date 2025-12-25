@@ -1,6 +1,7 @@
 class Game2048 {
     constructor() {
         this.gridSize = 4;
+        this.availableGridSizes = [4, 5]; // Available grid sizes
         this.grid = [];
         this.score = 0;
         this.bestScore = parseInt(localStorage.getItem('bestScore')) || 0;
@@ -180,6 +181,7 @@ class Game2048 {
             devConsole: false,
             mega: false // For reaching 8192+
         };
+        this.allAchievementsUnlocked = localStorage.getItem('2048-all-achievements-unlocked') === 'true' || false;
         
         this.init();
     }
@@ -203,6 +205,9 @@ class Game2048 {
         if (!this.loadGame()) {
             this.newGame();
         }
+        
+        // Initialize achievement progress tracker
+        this.updateAchievementProgress();
     }
     
     setupGrid() {
@@ -265,7 +270,6 @@ class Game2048 {
         this.history = [];
         this.gameOver = false;
         this.won = false;
-        this.boostActive = false;
         
         // Reset power-ups
         this.powerups = {
@@ -484,6 +488,8 @@ class Game2048 {
                     const newValue = row[i] * 2;
                     merged.push(newValue);
                     this.score += newValue;
+                    this.globalStats.totalTilesMerged++;
+                    this.playMergeSound(newValue);
                     this.checkForPowerupReward(newValue);
                     
                     // Emit particles at merge position
@@ -526,6 +532,8 @@ class Game2048 {
                     const newValue = row[i] * 2;
                     merged.unshift(newValue);
                     this.score += newValue;
+                    this.globalStats.totalTilesMerged++;
+                    this.playMergeSound(newValue);
                     this.checkForPowerupReward(newValue);
                     
                     // Emit particles at merge position (right side)
@@ -575,6 +583,8 @@ class Game2048 {
                     const newValue = col[i] * 2;
                     merged.push(newValue);
                     this.score += newValue;
+                    this.globalStats.totalTilesMerged++;
+                    this.playMergeSound(newValue);
                     this.checkForPowerupReward(newValue);
                     
                     // Emit particles at merge position
@@ -661,6 +671,7 @@ class Game2048 {
         this.updateScore();
         this.render();
         this.saveGame();
+        this.updateAchievementProgress();
         
         if (!this.canMove()) {
             this.gameOver = true;
@@ -983,7 +994,7 @@ class Game2048 {
                 if (value !== 0) {
                     const tile = document.createElement('div');
                     tile.className = 'tile tile-' + value + ' selectable';
-                    tile.textContent = value;
+                    tile.textContent = this.formatTileValue(value);
                     
                     const x = c * (cellSize + 15);
                     const y = r * (cellSize + 15);
@@ -1082,7 +1093,7 @@ class Game2048 {
                 if (value !== 0) {
                     const tile = document.createElement('div');
                     tile.className = 'tile tile-' + value + ' selectable';
-                    tile.textContent = value;
+                    tile.textContent = this.formatTileValue(value);
                     
                     const x = c * (cellSize + 15);
                     const y = r * (cellSize + 15);
@@ -1195,7 +1206,7 @@ class Game2048 {
                 if (value !== 0) {
                     const tile = document.createElement('div');
                     tile.className = 'tile tile-' + value + ' selectable';
-                    tile.textContent = value;
+                    tile.textContent = this.formatTileValue(value);
                     
                     const x = c * (cellSize + 15);
                     const y = r * (cellSize + 15);
@@ -1332,7 +1343,7 @@ class Game2048 {
                         tile.style.boxShadow = '0 0 20px rgba(122, 157, 142, 0.8)';
                     }
                     
-                    tile.textContent = value;
+                    tile.textContent = this.formatTileValue(value);
                     
                     const x = c * (cellSize + 15);
                     const y = r * (cellSize + 15);
@@ -1471,146 +1482,7 @@ class Game2048 {
                         tile.style.boxShadow = '0 0 20px rgba(122, 157, 142, 0.8)';
                     }
                     
-                    tile.textContent = value;
-                    
-                    const x = c * (cellSize + 15);
-                    const y = r * (cellSize + 15);
-                    
-                    tile.style.position = 'absolute';
-                    tile.style.width = cellSize + 'px';
-                    tile.style.height = cellSize + 'px';
-                    tile.style.left = x + 'px';
-                    tile.style.top = y + 'px';
-                    tile.style.lineHeight = cellSize + 'px';
-                    tile.style.zIndex = '100';
-                    
-                    tile.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        this.selectSwapTile(r, c, value);
-                    });
-                    
-                    container.appendChild(tile);
-                }
-            }
-        }
-    }
-    
-    selectSwapTile(row, col, value) {
-        if (!this.firstSwapTile) {
-            // First tile selected
-            this.firstSwapTile = { row, col, value };
-            this.updateSwapMessage('Click second tile to swap with');
-            this.renderForSwap(); // Re-render to highlight selected tile
-        } else {
-            // Second tile selected - perform swap
-            const temp = this.grid[this.firstSwapTile.row][this.firstSwapTile.col];
-            this.grid[this.firstSwapTile.row][this.firstSwapTile.col] = this.grid[row][col];
-            this.grid[row][col] = temp;
-            
-            this.swapMode = false;
-            this.selectionMode = false;
-            this.firstSwapTile = null;
-            this.hideSelectionOverlay();
-            this.render();
-            this.saveGame();
-            this.showMessage('Tiles swapped! 🔄', 'success');
-        }
-    }
-    
-    cancelSwap() {
-        this.swapMode = false;
-        this.selectionMode = false;
-        this.firstSwapTile = null;
-        this.hideSelectionOverlay();
-        this.powerups.swap++; // Refund the powerup
-        this.updatePowerupCounts();
-        this.render();
-        this.showMessage('Swap cancelled', 'info');
-    }
-    
-    swapTiles() {
-        if (this.gameOver) return;
-        
-        // Check if there are at least 2 tiles to swap
-        let tileCount = 0;
-        for (let r = 0; r < this.gridSize; r++) {
-            for (let c = 0; c < this.gridSize; c++) {
-                if (this.grid[r][c] !== 0) tileCount++;
-            }
-        }
-        
-        if (tileCount < 2) {
-            this.showMessage('Need at least 2 tiles to swap!', 'error');
-            return;
-        }
-        
-        this.swapMode = true;
-        this.selectionMode = true;
-        this.firstSwapTile = null;
-        this.powerups.swap--;
-        this.updatePowerupCounts();
-        this.showSwapOverlay();
-        this.renderForSwap();
-    }
-    
-    showSwapOverlay() {
-        const overlay = document.createElement('div');
-        overlay.className = 'selection-overlay';
-        overlay.id = 'swap-overlay';
-        
-        const message = document.createElement('div');
-        message.className = 'selection-message';
-        message.innerHTML = 'Click first tile to swap<br><small style="font-size: 0.8em; color: #909090;">Press ESC or click here to cancel</small>';
-        
-        message.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.cancelSwap();
-        });
-        
-        overlay.appendChild(message);
-        document.body.appendChild(overlay);
-        this.selectionOverlay = overlay;
-        
-        this.escapeHandler = (e) => {
-            if (e.key === 'Escape') {
-                this.cancelSwap();
-            }
-        };
-        document.addEventListener('keydown', this.escapeHandler);
-    }
-    
-    updateSwapMessage(text) {
-        if (this.selectionOverlay) {
-            const message = this.selectionOverlay.querySelector('.selection-message');
-            if (message) {
-                message.innerHTML = text + '<br><small style="font-size: 0.8em; color: #909090;">Press ESC or click here to cancel</small>';
-            }
-        }
-    }
-    
-    renderForSwap() {
-        const container = document.getElementById('tile-container');
-        container.innerHTML = '';
-        
-        const containerWidth = container.offsetWidth;
-        const cellSize = (containerWidth - (this.gridSize - 1) * 15) / this.gridSize;
-        
-        for (let r = 0; r < this.gridSize; r++) {
-            for (let c = 0; c < this.gridSize; c++) {
-                const value = this.grid[r][c];
-                if (value !== 0) {
-                    const tile = document.createElement('div');
-                    tile.className = 'tile tile-' + value + ' selectable';
-                    
-                    // Highlight first selected tile
-                    if (this.firstSwapTile && 
-                        this.firstSwapTile.row === r && 
-                        this.firstSwapTile.col === c) {
-                        tile.style.border = '3px solid #7a9d8e';
-                        tile.style.boxShadow = '0 0 20px rgba(122, 157, 142, 0.8)';
-                    }
-                    
-                    tile.textContent = value;
+                    tile.textContent = this.formatTileValue(value);
                     
                     const x = c * (cellSize + 15);
                     const y = r * (cellSize + 15);
@@ -1780,6 +1652,18 @@ class Game2048 {
         document.getElementById('game-over-modal').classList.remove('show');
     }
     
+    formatTileValue(value) {
+        // For tiles 16384 (16k) and above, use abbreviated format
+        if (value >= 1000000) {
+            // 1M, 2M, 4M, 8M, 16M, etc.
+            return Math.floor(value / 1000000) + 'M';
+        } else if (value >= 16384) {
+            // 16k, 32k, 64k, 128k, 256k, 512k
+            return Math.floor(value / 1024) + 'k';
+        }
+        return value.toString();
+    }
+    
     render() {
         const container = document.getElementById('tile-container');
         container.innerHTML = '';
@@ -1794,7 +1678,7 @@ class Game2048 {
                 if (value !== 0) {
                     const tile = document.createElement('div');
                     tile.className = 'tile tile-' + value;
-                    tile.textContent = value;
+                    tile.textContent = this.formatTileValue(value);
                     
                     const x = c * (cellSize + 15);
                     const y = r * (cellSize + 15);
@@ -2106,16 +1990,28 @@ class Particle {
         this.lifetime = lifetime;
         this.age = 0;
         this.opacity = 1;
-        this.gravity = gravity !== null ? gravity : 0.15; // Custom or default gravity
+        this.gravity = gravity !== null ? gravity : 0.15;
+        this.trail = []; // Store previous positions for trail effect
+        this.maxTrailLength = 5;
+        this.rotation = Math.random() * Math.PI * 2;
+        this.rotationSpeed = (Math.random() - 0.5) * 0.2;
     }
     
     update(deltaTime) {
+        // Store previous position for trail
+        this.trail.push({ x: this.x, y: this.y, opacity: this.opacity });
+        if (this.trail.length > this.maxTrailLength) {
+            this.trail.shift();
+        }
+        
         this.x += this.vx;
         this.y += this.vy;
-        this.vy += this.gravity; // Apply gravity
+        this.vy += this.gravity;
+        this.vx *= 0.99; // Air resistance
+        this.rotation += this.rotationSpeed;
         this.age += deltaTime;
         this.opacity = Math.max(0, 1 - (this.age / this.lifetime));
-        this.size = Math.max(0, this.size * 0.98); // Shrink
+        this.size = Math.max(0, this.size * 0.985); // Slower shrink
     }
     
     isDead() {
@@ -2124,11 +2020,46 @@ class Particle {
     
     render(ctx) {
         ctx.save();
+        
+        // Draw trail
+        this.trail.forEach((pos, i) => {
+            const trailOpacity = (i / this.trail.length) * this.opacity * 0.3;
+            const trailSize = this.size * (i / this.trail.length) * 0.7;
+            ctx.globalAlpha = trailOpacity;
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, trailSize, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        
+        // Draw main particle with glow
         ctx.globalAlpha = this.opacity;
+        
+        // Outer glow
+        const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 2);
+        gradient.addColorStop(0, this.color);
+        gradient.addColorStop(0.5, this.color + '80'); // Semi-transparent
+        gradient.addColorStop(1, this.color + '00'); // Fully transparent
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size * 2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Core particle
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
+        
+        // Add sparkle effect
+        if (this.opacity > 0.7) {
+            ctx.globalAlpha = this.opacity * 0.8;
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(this.x + this.size * 0.3, this.y - this.size * 0.3, this.size * 0.3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
         ctx.restore();
     }
 }
@@ -2426,6 +2357,157 @@ Object.assign(Game2048.prototype, {
         } else {
             this.updateAchievementUI();
             modal.style.display = 'flex';
+        }
+    },
+
+    // Update real-time achievement progress tracker
+    updateAchievementProgress() {
+        // Speed Demon: Reach 2048 in under 150 moves
+        const moves = this.stats.currentGameMoves;
+        const speedBar = document.getElementById('bar-speedDemon');
+        const speedText = document.getElementById('text-speedDemon');
+        const speedItem = document.getElementById('progress-speedDemon');
+        if (speedBar && speedText) {
+            const maxTile = Math.max(...this.grid.flat());
+            if (maxTile >= 2048 && moves <= 150) {
+                speedBar.style.width = '100%';
+                speedText.textContent = `✓ ${moves} moves!`;
+                speedItem.classList.add('completed');
+            } else {
+                const progress = Math.min((moves / 150) * 100, 100);
+                speedBar.style.width = progress + '%';
+                speedText.textContent = `${moves}/150 moves`;
+                if (moves > 150) {
+                    speedText.textContent = `✗ ${moves} moves`;
+                    speedBar.style.background = 'linear-gradient(90deg, #e74c3c, #c0392b)';
+                }
+            }
+        }
+
+        // Minimalist: Reach 2048 using ≤5 total powerups
+        const powerups = this.stats.currentGamePowerupsUsed;
+        const minBar = document.getElementById('bar-minimalist');
+        const minText = document.getElementById('text-minimalist');
+        const minItem = document.getElementById('progress-minimalist');
+        if (minBar && minText) {
+            const maxTile = Math.max(...this.grid.flat());
+            if (maxTile >= 2048 && powerups <= 5) {
+                minBar.style.width = '100%';
+                minText.textContent = `✓ ${powerups} powerups!`;
+                minItem.classList.add('completed');
+            } else {
+                const progress = Math.min((powerups / 5) * 100, 100);
+                minBar.style.width = progress + '%';
+                minText.textContent = `${powerups}/5 powerups`;
+                if (powerups > 5) {
+                    minText.textContent = `✗ ${powerups} powerups`;
+                    minBar.style.background = 'linear-gradient(90deg, #e74c3c, #c0392b)';
+                }
+            }
+        }
+
+        // No Undo: Reach 2048 without using undo
+        const noUndoBar = document.getElementById('bar-noUndo');
+        const noUndoText = document.getElementById('text-noUndo');
+        const noUndoItem = document.getElementById('progress-noUndo');
+        if (noUndoBar && noUndoText) {
+            const maxTile = Math.max(...this.grid.flat());
+            if (this.stats.currentGameUsedUndo) {
+                noUndoBar.style.width = '0%';
+                noUndoBar.style.background = 'linear-gradient(90deg, #e74c3c, #c0392b)';
+                noUndoText.textContent = '✗ Used undo';
+            } else if (maxTile >= 2048) {
+                noUndoBar.style.width = '100%';
+                noUndoText.textContent = '✓ Clean!';
+                noUndoItem.classList.add('completed');
+            } else {
+                const progress = Math.min((maxTile / 2048) * 100, 100);
+                noUndoBar.style.width = progress + '%';
+                noUndoText.textContent = `✓ Clean (${maxTile})`;
+            }
+        }
+
+        // Lock Master: Use lock 10 times
+        const lockBar = document.getElementById('bar-lockMaster');
+        const lockText = document.getElementById('text-lockMaster');
+        const lockItem = document.getElementById('progress-lockMaster');
+        if (lockBar && lockText) {
+            const lockUses = this.lifetimeStats.lockUses || 0;
+            const progress = Math.min((lockUses / 10) * 100, 100);
+            lockBar.style.width = progress + '%';
+            lockText.textContent = `${lockUses}/10 locks`;
+            if (lockUses >= 10) {
+                lockText.textContent = '✓ Completed!';
+                lockItem.classList.add('completed');
+            }
+        }
+
+        // Swap Expert: Use swap 25 times
+        const swapBar = document.getElementById('bar-swapExpert');
+        const swapText = document.getElementById('text-swapExpert');
+        const swapItem = document.getElementById('progress-swapExpert');
+        if (swapBar && swapText) {
+            const swapUses = this.lifetimeStats.swapUses || 0;
+            const progress = Math.min((swapUses / 25) * 100, 100);
+            swapBar.style.width = progress + '%';
+            swapText.textContent = `${swapUses}/25 swaps`;
+            if (swapUses >= 25) {
+                swapText.textContent = '✓ Completed!';
+                swapItem.classList.add('completed');
+            }
+        }
+
+        // Hoarder: Have 5+ of every powerup simultaneously
+        const hoardBar = document.getElementById('bar-hoarder');
+        const hoardText = document.getElementById('text-hoarder');
+        const hoardItem = document.getElementById('progress-hoarder');
+        if (hoardBar && hoardText) {
+            const minPowerup = Math.min(
+                this.powerups.undo,
+                this.powerups.swap,
+                this.powerups.lock,
+                this.powerups.shuffle,
+                this.powerups.remove,
+                this.powerups.double
+            );
+            const progress = Math.min((minPowerup / 5) * 100, 100);
+            hoardBar.style.width = progress + '%';
+            hoardText.textContent = `Min: ${minPowerup}/5`;
+            if (minPowerup >= 5) {
+                hoardText.textContent = '✓ Hoarding!';
+                hoardItem.classList.add('completed');
+            }
+        }
+
+        // Perfect Game: Reach 4096 with no tile removals
+        const perfectBar = document.getElementById('bar-perfectGame');
+        const perfectText = document.getElementById('text-perfectGame');
+        const perfectItem = document.getElementById('progress-perfectGame');
+        if (perfectBar && perfectText) {
+            const maxTile = Math.max(...this.grid.flat());
+            if (this.stats.currentGameUsedRemove) {
+                perfectBar.style.width = '0%';
+                perfectBar.style.background = 'linear-gradient(90deg, #e74c3c, #c0392b)';
+                perfectText.textContent = '✗ Used remove';
+            } else if (maxTile >= 4096) {
+                perfectBar.style.width = '100%';
+                perfectText.textContent = '✓ Perfect!';
+                perfectItem.classList.add('completed');
+            } else {
+                const progress = Math.min((maxTile / 4096) * 100, 100);
+                perfectBar.style.width = progress + '%';
+                perfectText.textContent = `✓ Clean (${maxTile})`;
+            }
+        }
+    },
+
+    // Toggle progress tracker visibility
+    toggleProgressTracker() {
+        const content = document.getElementById('tracker-content');
+        const toggleBtn = document.querySelector('.tracker-toggle');
+        if (content && toggleBtn) {
+            content.classList.toggle('collapsed');
+            toggleBtn.textContent = content.classList.contains('collapsed') ? '+' : '−';
         }
     }
 });
@@ -2920,7 +3002,7 @@ Object.assign(Game2048.prototype, {
             this.updateSoundUI();
             modal.style.display = 'flex';
         }
-    }
+    },
 
     // ==========================================
     // EASTER EGGS & SECRETS SYSTEM
@@ -2953,7 +3035,7 @@ Object.assign(Game2048.prototype, {
         if (saved) {
             this.secretsUnlocked = JSON.parse(saved);
         }
-    }
+    },
 
     showConsoleArt() {
         console.log(`
@@ -2984,7 +3066,7 @@ Object.assign(Game2048.prototype, {
         ];
         const randomTip = tips[Math.floor(Math.random() * tips.length)];
         console.log(`%c${randomTip}`, 'color: #f5a623; font-style: italic;');
-    }
+    },
 
     activateKonamiCode() {
         if (this.secretsUnlocked.konami) {
@@ -2995,15 +3077,11 @@ Object.assign(Game2048.prototype, {
         this.secretsUnlocked.konami = true;
         this.saveSecrets();
 
-        // Grant 5 random powerups
+        // Grant 5 of EVERY powerup type
         const types = ['undo', 'swap', 'lock', 'shuffle', 'remove', 'double'];
-        const granted = [];
-        
-        for (let i = 0; i < 5; i++) {
-            const type = types[Math.floor(Math.random() * types.length)];
-            this.powerups[type]++;
-            granted.push(type);
-        }
+        types.forEach(type => {
+            this.powerups[type] += 5;
+        });
 
         // Special rainbow animation
         document.body.style.animation = 'rainbow 2s ease-in-out';
@@ -3011,22 +3089,23 @@ Object.assign(Game2048.prototype, {
             document.body.style.animation = '';
         }, 2000);
 
-        // Play special sound sequence
+        // Play quick celebratory sound
         if (this.soundEnabled && this.audioContext) {
-            const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+            const notes = [523.25, 659.25, 783.99]; // C5, E5, G5 - just 3 notes
             notes.forEach((freq, i) => {
                 setTimeout(() => {
-                    this.playTone(freq, 150, 'square', 0.3);
-                }, i * 150);
+                    this.playTone(freq, 100, 'square', 0.25); // Shorter duration, lower volume
+                }, i * 100); // Faster
             });
         }
 
-        this.showMessage(`🎮 KONAMI CODE ACTIVATED!\n🎁 Granted 5 random powerups!\n✨ ${granted.join(', ')}`);
+        this.showMessage(`🎮 KONAMI CODE ACTIVATED!\n🎁 +5 of EVERY powerup!\n✨ Total: 30 powerups granted!`);
         console.log('%c🎮 KONAMI CODE ACTIVATED! 🎮', 'color: #ff6b6b; font-size: 20px; font-weight: bold;');
+        console.log('%c+5 of each powerup type (30 total)!', 'color: #4ecdc4; font-size: 16px;');
         
-        this.updatePowerupUI();
+        this.updatePowerupCounts();
         this.checkSecretHunterAchievement();
-    }
+    },
 
     toggleDevConsole() {
         this.devConsoleEnabled = !this.devConsoleEnabled;
@@ -3043,28 +3122,28 @@ Object.assign(Game2048.prototype, {
         } else {
             consoleEl.classList.remove('active');
         }
-    }
+    },
 
     // Dev Console Actions
     devAddPowerup(type) {
         if (this.powerups.hasOwnProperty(type)) {
             this.powerups[type] += 5;
-            this.updatePowerupUI();
+            this.updatePowerupCounts();
             this.showMessage(`🛠️ Added 5x ${type} powerups`);
         }
-    }
+    },
 
     devSetGridSize(size) {
-        this.gridSize = size;
-        this.resetGame();
+        this.changeGridSize(size);
         this.showMessage(`🛠️ Grid size changed to ${size}x${size}`);
-    }
+    },
 
     devUnlockTheme(theme) {
-        this.unlockedThemes.add(theme);
-        this.updateThemeUI();
-        this.showMessage(`🛠️ Unlocked ${theme} theme`);
-    }
+        if (this.themes[theme]) {
+            this.unlockTheme(theme);
+            this.showMessage(`🛠️ Unlocked ${theme} theme`);
+        }
+    },
 
     devUnlockAllAchievements() {
         Object.keys(this.achievements).forEach(key => {
@@ -3075,7 +3154,7 @@ Object.assign(Game2048.prototype, {
         this.saveAchievements();
         this.updateAchievementUI();
         this.showMessage('🛠️ Unlocked all achievements!');
-    }
+    },
 
     devSpawnTile(value) {
         const emptyCells = [];
@@ -3090,10 +3169,10 @@ Object.assign(Game2048.prototype, {
         if (emptyCells.length > 0) {
             const { row, col } = emptyCells[Math.floor(Math.random() * emptyCells.length)];
             this.grid[row][col] = value;
-            this.updateGrid();
+            this.render();
             this.showMessage(`🛠️ Spawned ${value} tile`);
         }
-    }
+    },
 
     checkSecretHunterAchievement() {
         const secretsFound = Object.values(this.secretsUnlocked).filter(v => v === true).length;
@@ -3102,7 +3181,7 @@ Object.assign(Game2048.prototype, {
             this.unlockAchievement('secretHunter');
             
             // Epic celebration for finding all secrets!
-            this.createConfetti();
+            this.emitConfetti();
             if (this.soundEnabled && this.audioContext) {
                 // Play a special celebratory tune
                 const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50]; // C4-C6 scale
@@ -3116,7 +3195,36 @@ Object.assign(Game2048.prototype, {
                 });
             }
         }
-    }
+        
+        // Check if ALL achievements are now unlocked
+        this.checkAllAchievementsComplete();
+    },
+    
+    checkAllAchievementsComplete() {
+        const allUnlocked = Object.values(this.achievements).every(achievement => achievement.unlocked);
+        
+        if (allUnlocked && !this.allAchievementsUnlocked) {
+            this.allAchievementsUnlocked = true;
+            
+            // Epic celebration!
+            this.showMessage('🎊 INCREDIBLE! ALL ACHIEVEMENTS UNLOCKED! 🎊\n🏆 You are a TRUE 2048 MASTER! 🏆', 'success');
+            
+            // Triple confetti burst
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    this.createConfetti(100);
+                }, i * 500);
+            }
+            
+            // Golden console message
+            console.log('%c🏆🎉 ACHIEVEMENT MASTER! 🎉🏆', 'color: #ffd700; font-size: 24px; font-weight: bold; text-shadow: 3px 3px 6px rgba(255,0,0,0.5);');
+            console.log('%cYou have unlocked ALL 8 achievements!', 'color: #ff6ec7; font-size: 16px; font-weight: bold;');
+            console.log('%cYou are now in the HALL OF LEGENDS!', 'color: #00ff41; font-size: 16px; font-weight: bold;');
+            
+            // Save this legendary status
+            localStorage.setItem('2048-all-achievements-unlocked', 'true');
+        }
+    },
 
     checkMegaSecret() {
         // Check for 8192 or higher tiles
@@ -3147,11 +3255,15 @@ Object.assign(Game2048.prototype, {
                 }
             });
         }
-    }
+    },
 
     saveSecrets() {
         localStorage.setItem('2048-secrets', JSON.stringify(this.secretsUnlocked));
-    }
+    },
+    
+    // ==========================================
+    // SOUND SETTINGS MANAGEMENT
+    // ==========================================
 });
 
 // Initialize game when page loads

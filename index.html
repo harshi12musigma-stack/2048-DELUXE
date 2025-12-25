@@ -49,7 +49,33 @@
             <div class="game-status" id="game-status"></div>
         </div>
 
-        <!-- Power-ups Section -->
+        <!-- Theme Selector (moved above powerups) -->
+        <div class="theme-selector" id="theme-selector" style="display: none;">
+            <h3>🎨 Themes</h3>
+            <div class="theme-buttons">
+                <button class="theme-button" data-theme="default">
+                    <span class="theme-icon">🌟</span>
+                    <span class="theme-name">Default</span>
+                </button>
+                <button class="theme-button locked" data-theme="cyberpunk">
+                    <span class="theme-icon">🌆</span>
+                    <span class="theme-name">Cyberpunk</span>
+                    <span class="lock-icon">🔒</span>
+                </button>
+                <button class="theme-button locked" data-theme="vaporwave">
+                    <span class="theme-icon">🌊</span>
+                    <span class="theme-name">Vaporwave</span>
+                    <span class="lock-icon">🔒</span>
+                </button>
+                <button class="theme-button locked" data-theme="matrix">
+                    <span class="theme-icon">💚</span>
+                    <span class="theme-name">Matrix</span>
+                    <span class="lock-icon">🔒</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Power-ups Section (moved below themes) -->
         <div class="powerups">
             <div class="powerup-item" id="swap-btn" title="Swap any two tiles">
                 <div class="powerup-icon">🔄</div>
@@ -80,32 +106,6 @@
                 <div class="powerup-icon">✨</div>
                 <div class="powerup-name">Double</div>
                 <div class="powerup-count" id="double-count">0</div>
-            </div>
-        </div>
-
-        <!-- Theme Selector -->
-        <div class="theme-selector" id="theme-selector" style="display: none;">
-            <h3>🎨 Themes</h3>
-            <div class="theme-buttons">
-                <button class="theme-button" data-theme="default">
-                    <span class="theme-icon">🌟</span>
-                    <span class="theme-name">Default</span>
-                </button>
-                <button class="theme-button locked" data-theme="cyberpunk">
-                    <span class="theme-icon">🌆</span>
-                    <span class="theme-name">Cyberpunk</span>
-                    <span class="lock-icon">🔒</span>
-                </button>
-                <button class="theme-button locked" data-theme="vaporwave">
-                    <span class="theme-icon">🌊</span>
-                    <span class="theme-name">Vaporwave</span>
-                    <span class="lock-icon">🔒</span>
-                </button>
-                <button class="theme-button locked" data-theme="matrix">
-                    <span class="theme-icon">💚</span>
-                    <span class="theme-name">Matrix</span>
-                    <span class="lock-icon">🔒</span>
-                </button>
             </div>
         </div>
 
@@ -148,6 +148,87 @@
                 <h2>🏆 Achievements</h2>
                 <button class="modal-close" onclick="game.toggleAchievements()">×</button>
             </div>
+            
+            <!-- Achievement Progress Tracker -->
+            <div class="achievement-progress-tracker" id="achievement-progress-tracker" style="display: block; margin-bottom: 20px;">
+                <div class="tracker-header">
+                    <span class="tracker-title">🎯 Achievement Progress</span>
+                    <button class="tracker-toggle" onclick="game.toggleProgressTracker()" title="Toggle Tracker">−</button>
+                </div>
+                <div class="tracker-content" id="tracker-content">
+                    <div class="progress-item" id="progress-speedDemon">
+                        <div class="progress-info">
+                            <span class="progress-icon">⚡</span>
+                            <span class="progress-name">Speed Demon</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="bar-speedDemon"></div>
+                            <span class="progress-text" id="text-speedDemon">0/150 moves</span>
+                        </div>
+                    </div>
+                    <div class="progress-item" id="progress-minimalist">
+                        <div class="progress-info">
+                            <span class="progress-icon">🎯</span>
+                            <span class="progress-name">Minimalist</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="bar-minimalist"></div>
+                            <span class="progress-text" id="text-minimalist">0/5 powerups</span>
+                        </div>
+                    </div>
+                    <div class="progress-item" id="progress-noUndo">
+                        <div class="progress-info">
+                            <span class="progress-icon">🚫</span>
+                            <span class="progress-name">No Undo</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="bar-noUndo"></div>
+                            <span class="progress-text" id="text-noUndo">✓ Clean</span>
+                        </div>
+                    </div>
+                    <div class="progress-item" id="progress-lockMaster">
+                        <div class="progress-info">
+                            <span class="progress-icon">🔒</span>
+                            <span class="progress-name">Lock Master</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="bar-lockMaster"></div>
+                            <span class="progress-text" id="text-lockMaster">0/10 locks</span>
+                        </div>
+                    </div>
+                    <div class="progress-item" id="progress-swapExpert">
+                        <div class="progress-info">
+                            <span class="progress-icon">🔄</span>
+                            <span class="progress-name">Swap Expert</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="bar-swapExpert"></div>
+                            <span class="progress-text" id="text-swapExpert">0/25 swaps</span>
+                        </div>
+                    </div>
+                    <div class="progress-item" id="progress-hoarder">
+                        <div class="progress-info">
+                            <span class="progress-icon">💰</span>
+                            <span class="progress-name">Hoarder</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="bar-hoarder"></div>
+                            <span class="progress-text" id="text-hoarder">Collecting...</span>
+                        </div>
+                    </div>
+                    <div class="progress-item" id="progress-perfectGame">
+                        <div class="progress-info">
+                            <span class="progress-icon">💎</span>
+                            <span class="progress-name">Perfect Game</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="bar-perfectGame"></div>
+                            <span class="progress-text" id="text-perfectGame">✓ Clean</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div id="achievements-list" class="achievements-list">
                 <!-- Achievement cards will be dynamically added here -->
             </div>
