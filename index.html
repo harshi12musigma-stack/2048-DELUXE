@@ -37,6 +37,11 @@
 
         <div class="controls">
             <button class="btn btn-primary" id="new-game">New Game</button>
+            <div class="grid-size-selector">
+                <span class="grid-size-label">Grid:</span>
+                <button class="grid-size-btn active" data-size="4" onclick="game.changeGridSize(4)">4×4</button>
+                <button class="grid-size-btn" data-size="5" onclick="game.changeGridSize(5)">5×5</button>
+            </div>
             <div class="game-status" id="game-status"></div>
         </div>
 

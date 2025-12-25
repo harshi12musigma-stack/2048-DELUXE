@@ -161,6 +161,7 @@ class Game2048 {
     }
     
     init() {
+        this.loadGridSize();
         this.loadThemeProgress();
         this.loadAchievements();
         this.loadStatistics();
@@ -179,6 +180,9 @@ class Game2048 {
     setupGrid() {
         const gridContainer = document.getElementById('grid-container');
         gridContainer.innerHTML = '';
+        
+        // Set CSS custom property for grid size
+        gridContainer.style.setProperty('--grid-size', this.gridSize);
         
         for (let i = 0; i < this.gridSize * this.gridSize; i++) {
             const cell = document.createElement('div');
@@ -265,9 +269,12 @@ class Game2048 {
         this.updatePowerupCounts();
         this.updateGameStatus('');
         
-        // Add initial tiles
-        this.addRandomTile();
-        this.addRandomTile();
+        // Add initial tiles (more for larger grids)
+        const initialTiles = this.gridSize === 5 ? 3 : 2;
+        for (let i = 0; i < initialTiles; i++) {
+            this.addRandomTile();
+        }
+        
         this.render();
         this.saveGame();
     }
@@ -2580,6 +2587,74 @@ Object.assign(Game2048.prototype, {
         this.saveStatistics();
         this.updateStatisticsUI();
         this.showMessage('Statistics reset!', 'success');
+    }
+});
+
+// Grid Size Management Extension for Game2048
+Object.assign(Game2048.prototype, {
+    // Load grid size preference
+    loadGridSize() {
+        const saved = localStorage.getItem('2048_gridSize');
+        if (saved) {
+            const size = parseInt(saved);
+            if (this.availableGridSizes.includes(size)) {
+                this.gridSize = size;
+            }
+        }
+        this.updateGridSizeUI();
+    },
+    
+    // Save grid size preference
+    saveGridSize() {
+        localStorage.setItem('2048_gridSize', this.gridSize.toString());
+    },
+    
+    // Change grid size
+    changeGridSize(newSize) {
+        if (!this.availableGridSizes.includes(newSize)) {
+            return;
+        }
+        
+        // Confirm if game is in progress
+        if (this.score > 0) {
+            const confirmed = confirm(
+                `⚠️ Change grid size to ${newSize}x${newSize}?\n\n` +
+                `Your current game will be lost!\n\n` +
+                `Current Score: ${this.score}`
+            );
+            if (!confirmed) {
+                return;
+            }
+        }
+        
+        this.gridSize = newSize;
+        this.saveGridSize();
+        this.updateGridSizeUI();
+        
+        // Reinitialize grid with new size
+        this.setupGrid();
+        this.newGame();
+        
+        this.showMessage(`Switched to ${newSize}x${newSize} grid!`, 'success');
+    },
+    
+    // Update grid size selector UI
+    updateGridSizeUI() {
+        const buttons = document.querySelectorAll('.grid-size-btn');
+        buttons.forEach(btn => {
+            const size = parseInt(btn.dataset.size);
+            if (size === this.gridSize) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+        
+        // Update any grid size display
+        const display = document.getElementById('current-grid-size');
+        if (display) {
+            display.textContent = `${this.gridSize}x${this.gridSize}`;
+        }
     }
 });
 
