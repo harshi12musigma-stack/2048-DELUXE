@@ -32,6 +32,9 @@
                 <button class="stats-btn" onclick="game.toggleStatistics()" title="View Statistics">
                     📊
                 </button>
+                <button class="sound-btn" id="sound-toggle" onclick="game.toggleSound()" title="Toggle Sound">
+                    🔊
+                </button>
             </div>
         </div>
 
@@ -246,6 +249,16 @@
                     }
                 });
             });
+            
+            // Setup volume slider if it exists
+            const volumeSlider = document.getElementById('volume-slider');
+            if (volumeSlider) {
+                volumeSlider.addEventListener('input', (e) => {
+                    if (game) {
+                        game.setVolume(e.target.value / 100);
+                    }
+                });
+            }
         });
     </script>
 </body>

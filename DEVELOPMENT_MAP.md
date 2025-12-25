@@ -408,23 +408,39 @@ this.globalStats = {
 
 ---
 
-## 🎵 **FEATURE 11: Sound System**
+## 🎵 **FEATURE 11: Sound System - ✅ COMPLETED**
 **Priority:** LOW | **Complexity:** MEDIUM | **Estimated Time:** 2-3 hours
 
-### Implementation:
-- Use Web Audio API or HTML5 Audio
-- Load sound files (or generate tones)
-- Volume control slider
-- Mute toggle button
-- Persist audio preference
+### Implementation: ✅ DONE
+- ✅ Web Audio API with procedural audio generation
+- ✅ playTone() core method with oscillator-based synthesis
+- ✅ Volume control slider (0-100%)
+- ✅ Mute toggle button (🔊/🔇)
+- ✅ LocalStorage persistence for sound settings
+- ✅ Master volume control (0.3 default)
 
-### Sounds Needed:
-- Tile merge (pitch varies by tile value)
-- Powerup use
-- Achievement unlock
-- Theme unlock
-- Game over
-- Victory
+### Sounds Implemented: ✅ ALL COMPLETE
+- ✅ Tile merge (logarithmic pitch scaling: 200Hz * 2^(log2(value/2)/4))
+  - Duration scales with tile value
+  - Harmonics added for tiles ≥128
+- ✅ Powerup use (6 unique sounds):
+  - Undo: C5 square wave
+  - Swap: E5 triangle wave
+  - Shuffle: G5 sine wave
+  - Remove: G4 sawtooth wave
+  - Lock: A4 sine wave
+  - Double: A5 square wave with echo effect
+- ✅ Achievement unlock: Ascending arpeggio (C5→E5→G5→C6)
+- ✅ Theme unlock: Magical sweep (A4→C#5→E5→A5)
+- ✅ Game over: Descending melody (E5→C5→A4→F4 sawtooth)
+- ✅ Victory: Triumphant fanfare with harmony (1.5x frequency)
+
+**Files Modified:**
+- `game.js` - Added audioContext, soundEnabled, masterVolume properties; initAudioContext(), loadSoundSettings(), saveSoundSettings(), playTone(), playMergeSound(), playPowerupSound(), playAchievementSound(), playThemeUnlockSound(), playVictorySound(), playGameOverSound(), toggleSound(), setVolume(), updateSoundUI(); integrated sound calls at merge, powerup, achievement, victory, game over points
+- `index.html` - Added sound toggle button in header, volume slider event listener
+- `style.css` - Added .sound-btn styling with blue gradient
+
+**Commit:** 🔊 Feature 11: Sound System with Web Audio API
 
 ---
 

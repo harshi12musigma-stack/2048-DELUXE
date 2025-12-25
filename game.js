@@ -157,6 +157,11 @@ class Game2048 {
         
         this.gameStartTime = null;
         
+        // Sound System
+        this.audioContext = null;
+        this.soundEnabled = true;
+        this.masterVolume = 0.3;
+        
         this.init();
     }
     
@@ -165,6 +170,8 @@ class Game2048 {
         this.loadThemeProgress();
         this.loadAchievements();
         this.loadStatistics();
+        this.loadSoundSettings();
+        this.initAudioContext();
         this.setupGrid();
         this.setupParticleSystem();
         this.setupEventListeners();
@@ -596,6 +603,7 @@ class Game2048 {
                     merged.unshift(newValue);
                     this.score += newValue;
                     this.globalStats.totalTilesMerged++;
+                    this.playMergeSound(newValue);
                     this.checkForPowerupReward(newValue);
                     
                     // Emit particles at merge position (bottom)
@@ -674,6 +682,8 @@ class Game2048 {
         if (type === 'remove') this.stats.currentGameUsedRemove = true;
         if (type === 'lock') this.lifetimeStats.lockUses++;
         if (type === 'swap') this.lifetimeStats.swapUses++;
+        
+        this.playPowerupSound(type);
         
         switch(type) {
             case 'swap':
@@ -1697,7 +1707,8 @@ class Game2048 {
     showVictory() {
         this.won = true;
         
-        // Confetti celebration!
+        // Victory sound and celebration effects
+        this.playVictorySound();
         this.emitConfetti();
         this.screenShake(6, 400);
         
@@ -1716,6 +1727,7 @@ class Game2048 {
             const undoBtn = document.getElementById('modal-undo');
             if (continueBtn) continueBtn.style.display = 'none';
             if (undoBtn) undoBtn.style.display = 'inline-block';
+            this.playGameOverSound();
             this.showModal('Game Over!', 'No more moves available');
         }, 500);
     }
@@ -2318,7 +2330,8 @@ Object.assign(Game2048.prototype, {
         this.showAchievementNotification(this.achievements[id]);
         this.updateAchievementUI();
         
-        // Confetti celebration
+        // Celebration effects
+        this.playAchievementSound();
         this.emitConfetti();
         this.screenShake(10, 500);
     },
@@ -2654,6 +2667,234 @@ Object.assign(Game2048.prototype, {
         const display = document.getElementById('current-grid-size');
         if (display) {
             display.textContent = `${this.gridSize}x${this.gridSize}`;
+        }
+    }
+});
+
+// Sound System Extension for Game2048
+Object.assign(Game2048.prototype, {
+    // Initialize Audio Context
+    initAudioContext() {
+        try {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            console.warn('Web Audio API not supported', e);
+            this.soundEnabled = false;
+        }
+    },
+    
+    // Load sound settings
+    loadSoundSettings() {
+        const saved = localStorage.getItem('2048_soundSettings');
+        if (saved) {
+            try {
+                const settings = JSON.parse(saved);
+                this.soundEnabled = settings.enabled !== undefined ? settings.enabled : true;
+                this.masterVolume = settings.volume !== undefined ? settings.volume : 0.3;
+            } catch (e) {
+                console.error('Failed to load sound settings:', e);
+            }
+        }
+        this.updateSoundUI();
+    },
+    
+    // Save sound settings
+    saveSoundSettings() {
+        const settings = {
+            enabled: this.soundEnabled,
+            volume: this.masterVolume
+        };
+        localStorage.setItem('2048_soundSettings', JSON.stringify(settings));
+    },
+    
+    // Play tone with frequency and duration
+    playTone(frequency, duration, type = 'sine', volume = 1.0) {
+        if (!this.soundEnabled || !this.audioContext) return;
+        
+        try {
+            const oscillator = this.audioContext.createOscillator();
+            const gainNode = this.audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(this.audioContext.destination);
+            
+            oscillator.type = type;
+            oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+            
+            const actualVolume = this.masterVolume * volume;
+            gainNode.gain.setValueAtTime(actualVolume, this.audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration);
+            
+            oscillator.start(this.audioContext.currentTime);
+            oscillator.stop(this.audioContext.currentTime + duration);
+        } catch (e) {
+            console.warn('Audio playback failed:', e);
+        }
+    },
+    
+    // Play merge sound (pitch increases with tile value)
+    playMergeSound(tileValue) {
+        if (!this.soundEnabled || !this.audioContext) return;
+        
+        // Calculate frequency based on tile value (logarithmic scale)
+        const baseFreq = 200;
+        const octaves = Math.log2(tileValue / 2);
+        const frequency = baseFreq * Math.pow(2, octaves / 4);
+        
+        // Higher tiles = longer, deeper sound
+        const duration = Math.min(0.15 + octaves * 0.02, 0.4);
+        
+        this.playTone(frequency, duration, 'sine', 0.4);
+        
+        // Add harmonic for higher tiles
+        if (tileValue >= 128) {
+            setTimeout(() => {
+                this.playTone(frequency * 1.5, duration * 0.6, 'sine', 0.2);
+            }, 30);
+        }
+    },
+    
+    // Play powerup sound
+    playPowerupSound(type) {
+        if (!this.soundEnabled || !this.audioContext) return;
+        
+        const powerupSounds = {
+            undo: { freq: 523, duration: 0.2, type: 'square' },      // C5
+            swap: { freq: 659, duration: 0.15, type: 'triangle' },   // E5
+            shuffle: { freq: 784, duration: 0.25, type: 'sine' },    // G5
+            remove: { freq: 392, duration: 0.2, type: 'sawtooth' },  // G4
+            lock: { freq: 440, duration: 0.3, type: 'sine' },        // A4
+            double: { freq: 880, duration: 0.2, type: 'square' }     // A5
+        };
+        
+        const sound = powerupSounds[type];
+        if (sound) {
+            this.playTone(sound.freq, sound.duration, sound.type, 0.5);
+            // Add echo effect
+            setTimeout(() => {
+                this.playTone(sound.freq * 1.25, sound.duration * 0.5, sound.type, 0.25);
+            }, 80);
+        }
+    },
+    
+    // Play achievement unlock sound
+    playAchievementSound() {
+        if (!this.soundEnabled || !this.audioContext) return;
+        
+        // Ascending arpeggio
+        const notes = [523, 659, 784, 1047]; // C5, E5, G5, C6
+        notes.forEach((freq, i) => {
+            setTimeout(() => {
+                this.playTone(freq, 0.3, 'sine', 0.4);
+            }, i * 100);
+        });
+    },
+    
+    // Play theme unlock sound
+    playThemeUnlockSound() {
+        if (!this.soundEnabled || !this.audioContext) return;
+        
+        // Magical ascending sweep
+        const notes = [440, 554, 659, 880]; // A4, C#5, E5, A5
+        notes.forEach((freq, i) => {
+            setTimeout(() => {
+                this.playTone(freq, 0.25, 'triangle', 0.5);
+            }, i * 80);
+        });
+    },
+    
+    // Play victory sound
+    playVictorySound() {
+        if (!this.soundEnabled || !this.audioContext) return;
+        
+        // Triumphant fanfare
+        const melody = [
+            { freq: 523, duration: 0.2 },  // C5
+            { freq: 659, duration: 0.2 },  // E5
+            { freq: 784, duration: 0.2 },  // G5
+            { freq: 1047, duration: 0.4 }  // C6
+        ];
+        
+        melody.forEach((note, i) => {
+            setTimeout(() => {
+                this.playTone(note.freq, note.duration, 'sine', 0.6);
+                // Add harmony
+                this.playTone(note.freq * 1.5, note.duration, 'sine', 0.3);
+            }, i * 150);
+        });
+    },
+    
+    // Play game over sound
+    playGameOverSound() {
+        if (!this.soundEnabled || !this.audioContext) return;
+        
+        // Descending sad sound
+        const notes = [659, 523, 440, 349]; // E5, C5, A4, F4
+        notes.forEach((freq, i) => {
+            setTimeout(() => {
+                this.playTone(freq, 0.3, 'sawtooth', 0.4);
+            }, i * 120);
+        });
+    },
+    
+    // Toggle sound on/off
+    toggleSound() {
+        this.soundEnabled = !this.soundEnabled;
+        this.saveSoundSettings();
+        this.updateSoundUI();
+        
+        // Play test sound when enabling
+        if (this.soundEnabled) {
+            this.playTone(440, 0.2, 'sine', 0.5);
+        }
+        
+        this.showMessage(
+            this.soundEnabled ? '🔊 Sound Enabled' : '🔇 Sound Disabled',
+            'success'
+        );
+    },
+    
+    // Set volume
+    setVolume(volume) {
+        this.masterVolume = Math.max(0, Math.min(1, volume));
+        this.saveSoundSettings();
+        this.updateSoundUI();
+        
+        // Play test sound at new volume
+        if (this.soundEnabled) {
+            this.playTone(440, 0.2, 'sine', 0.5);
+        }
+    },
+    
+    // Update sound UI elements
+    updateSoundUI() {
+        const soundBtn = document.getElementById('sound-toggle');
+        if (soundBtn) {
+            soundBtn.textContent = this.soundEnabled ? '🔊' : '🔇';
+            soundBtn.title = this.soundEnabled ? 'Sound: ON' : 'Sound: OFF';
+        }
+        
+        const volumeSlider = document.getElementById('volume-slider');
+        if (volumeSlider) {
+            volumeSlider.value = this.masterVolume * 100;
+        }
+        
+        const volumeValue = document.getElementById('volume-value');
+        if (volumeValue) {
+            volumeValue.textContent = Math.round(this.masterVolume * 100) + '%';
+        }
+    },
+    
+    // Toggle sound settings modal
+    toggleSoundSettings() {
+        const modal = document.getElementById('sound-settings-modal');
+        if (!modal) return;
+        
+        if (modal.style.display === 'flex') {
+            modal.style.display = 'none';
+        } else {
+            this.updateSoundUI();
+            modal.style.display = 'flex';
         }
     }
 });
