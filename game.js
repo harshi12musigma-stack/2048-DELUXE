@@ -1,7 +1,7 @@
 class Game2048 {
     constructor() {
         this.gridSize = 4;
-        this.availableGridSizes = [4, 5]; // Available grid sizes
+        this.availableGridSizes = [4, 5, 6]; // Available grid sizes
         this.grid = [];
         this.score = 0;
         this.bestScore = parseInt(localStorage.getItem('bestScore')) || 0;
@@ -302,7 +302,7 @@ class Game2048 {
         this.updateGameStatus('');
         
         // Add initial tiles (more for larger grids)
-        const initialTiles = this.gridSize === 5 ? 3 : 2;
+        const initialTiles = this.gridSize >= 5 ? 3 : 2;
         for (let i = 0; i < initialTiles; i++) {
             this.addRandomTile();
         }
@@ -383,6 +383,16 @@ class Game2048 {
         
         const key = e.key;
         let moved = false;
+        
+        // Dev menu: cycle grid sizes with backtick key
+        if (key === '`') {
+            e.preventDefault();
+            const currentIndex = this.availableGridSizes.indexOf(this.gridSize);
+            const nextIndex = (currentIndex + 1) % this.availableGridSizes.length;
+            const nextSize = this.availableGridSizes[nextIndex];
+            this.changeGridSize(nextSize);
+            return;
+        }
         
         if (key === 'ArrowUp') {
             e.preventDefault();

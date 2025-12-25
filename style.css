@@ -818,7 +818,6 @@ body.theme-cyberpunk .score-value {
 
 body.theme-cyberpunk .grid-cell {
     background: rgba(189, 0, 255, 0.1);
-    border: 2px solid rgba(255, 0, 110, 0.2);
     box-shadow: inset 0 0 5px rgba(0, 245, 255, 0.1);
 }
 
@@ -1038,7 +1037,6 @@ body.theme-vaporwave .score-value {
 
 body.theme-vaporwave .grid-cell {
     background: rgba(255, 255, 255, 0.15);
-    border: 2px solid rgba(185, 103, 255, 0.4);
     backdrop-filter: blur(5px);
 }
 
@@ -1262,7 +1260,6 @@ body.theme-matrix .score-value {
 
 body.theme-matrix .grid-cell {
     background: rgba(0, 59, 0, 0.5);
-    border: 1px solid rgba(0, 255, 65, 0.3);
     box-shadow: inset 0 0 10px rgba(0, 255, 65, 0.1);
 }
 
