@@ -64,11 +64,86 @@ class Game2048 {
         // Particle System
         this.particleSystem = null;
         
+        // Achievement System
+        this.achievements = {
+            speedDemon: {
+                id: 'speedDemon',
+                name: 'Speed Demon',
+                description: 'Reach 2048 in under 150 moves',
+                icon: '⚡',
+                requirement: { type: 'moves', target: 2048, maxMoves: 150 },
+                unlocked: false
+            },
+            minimalist: {
+                id: 'minimalist',
+                name: 'Minimalist',
+                description: 'Reach 2048 using ≤5 total powerups',
+                icon: '🎯',
+                requirement: { type: 'powerups', target: 2048, maxPowerups: 5 },
+                unlocked: false
+            },
+            noUndo: {
+                id: 'noUndo',
+                name: 'No Undo',
+                description: 'Reach 2048 without using undo',
+                icon: '🚫',
+                requirement: { type: 'noPowerup', target: 2048, powerup: 'undo' },
+                unlocked: false
+            },
+            lockMaster: {
+                id: 'lockMaster',
+                name: 'Lock Master',
+                description: 'Successfully use lock 10 times',
+                icon: '🔒',
+                requirement: { type: 'powerupCount', powerup: 'lock', count: 10 },
+                unlocked: false
+            },
+            swapExpert: {
+                id: 'swapExpert',
+                name: 'Swap Expert',
+                description: 'Use swap 25 times',
+                icon: '🔄',
+                requirement: { type: 'powerupCount', powerup: 'swap', count: 25 },
+                unlocked: false
+            },
+            hoarder: {
+                id: 'hoarder',
+                name: 'Powerup Hoarder',
+                description: 'Have 5+ of every powerup simultaneously',
+                icon: '💰',
+                requirement: { type: 'hoarder', minEach: 5 },
+                unlocked: false
+            },
+            perfectGame: {
+                id: 'perfectGame',
+                name: 'Perfect Game',
+                description: 'Reach 4096 with no tile removals',
+                icon: '💎',
+                requirement: { type: 'noPowerup', target: 4096, powerup: 'remove' },
+                unlocked: false
+            }
+        };
+        
+        // Stats tracking for current game
+        this.stats = {
+            currentGameMoves: 0,
+            currentGamePowerupsUsed: 0,
+            currentGameUsedUndo: false,
+            currentGameUsedRemove: false
+        };
+        
+        // Lifetime stats
+        this.lifetimeStats = {
+            lockUses: 0,
+            swapUses: 0
+        };
+        
         this.init();
     }
     
     init() {
         this.loadThemeProgress();
+        this.loadAchievements();
         this.setupGrid();
         this.setupParticleSystem();
         this.setupEventListeners();
@@ -151,6 +226,14 @@ class Game2048 {
         };
         
         this.lockedTiles = [];
+        
+        // Reset current game stats
+        this.stats = {
+            currentGameMoves: 0,
+            currentGamePowerupsUsed: 0,
+            currentGameUsedUndo: false,
+            currentGameUsedRemove: false
+        };
         
         // Reset to default theme on new game
         this.switchTheme('default');
@@ -313,6 +396,9 @@ class Game2048 {
         if (!moved) {
             this.history.pop(); // Remove saved state if no move occurred
         } else {
+            // Track move for achievements
+            this.stats.currentGameMoves++;
+            
             // Decrement locked tiles moves remaining
             this.lockedTiles = this.lockedTiles.filter(tile => {
                 tile.movesRemaining--;
@@ -551,6 +637,13 @@ class Game2048 {
             return;
         }
         
+        // Track powerup usage
+        this.stats.currentGamePowerupsUsed++;
+        if (type === 'undo') this.stats.currentGameUsedUndo = true;
+        if (type === 'remove') this.stats.currentGameUsedRemove = true;
+        if (type === 'lock') this.lifetimeStats.lockUses++;
+        if (type === 'swap') this.lifetimeStats.swapUses++;
+        
         switch(type) {
             case 'swap':
                 this.swapTiles();
@@ -622,6 +715,9 @@ class Game2048 {
     checkForPowerupReward(mergedValue) {
         // Check for theme unlocks
         this.checkThemeUnlock(mergedValue);
+        
+        // Check achievements
+        this.checkAchievements();
         
         // Screen shake for high-value tiles
         if (mergedValue === 2048) {
@@ -2087,6 +2183,184 @@ class ParticleSystem {
         }
     }
 }
+
+// Achievement System Extension for Game2048
+Object.assign(Game2048.prototype, {
+    // Load achievements from localStorage
+    loadAchievements() {
+        const saved = localStorage.getItem('2048_achievements');
+        if (saved) {
+            try {
+                const data = JSON.parse(saved);
+                // Update unlocked status
+                for (const id in data.achievements) {
+                    if (this.achievements[id]) {
+                        this.achievements[id].unlocked = data.achievements[id].unlocked;
+                    }
+                }
+                // Restore lifetime stats
+                if (data.lifetimeStats) {
+                    this.lifetimeStats = { ...this.lifetimeStats, ...data.lifetimeStats };
+                }
+            } catch (e) {
+                console.error('Failed to load achievements:', e);
+            }
+        }
+        this.updateAchievementUI();
+    },
+    
+    // Save achievements to localStorage
+    saveAchievements() {
+        const data = {
+            achievements: {},
+            lifetimeStats: this.lifetimeStats
+        };
+        
+        for (const id in this.achievements) {
+            data.achievements[id] = {
+                unlocked: this.achievements[id].unlocked
+            };
+        }
+        
+        localStorage.setItem('2048_achievements', JSON.stringify(data));
+    },
+    
+    // Check all achievement conditions
+    checkAchievements() {
+        const maxTile = Math.max(...this.grid.flat());
+        
+        // Speed Demon: Reach 2048 in under 150 moves
+        if (!this.achievements.speedDemon.unlocked && 
+            maxTile >= 2048 && 
+            this.stats.currentGameMoves < 150) {
+            this.unlockAchievement('speedDemon');
+        }
+        
+        // Minimalist: Reach 2048 using ≤5 total powerups
+        if (!this.achievements.minimalist.unlocked && 
+            maxTile >= 2048 && 
+            this.stats.currentGamePowerupsUsed <= 5) {
+            this.unlockAchievement('minimalist');
+        }
+        
+        // No Undo: Reach 2048 without using undo
+        if (!this.achievements.noUndo.unlocked && 
+            maxTile >= 2048 && 
+            !this.stats.currentGameUsedUndo) {
+            this.unlockAchievement('noUndo');
+        }
+        
+        // Lock Master: Successfully use lock 10 times
+        if (!this.achievements.lockMaster.unlocked && 
+            this.lifetimeStats.lockUses >= 10) {
+            this.unlockAchievement('lockMaster');
+        }
+        
+        // Swap Expert: Use swap 25 times
+        if (!this.achievements.swapExpert.unlocked && 
+            this.lifetimeStats.swapUses >= 25) {
+            this.unlockAchievement('swapExpert');
+        }
+        
+        // Powerup Hoarder: Have 5+ of every powerup simultaneously
+        if (!this.achievements.hoarder.unlocked) {
+            const hasAllFive = Object.values(this.powerups).every(count => count >= 5);
+            if (hasAllFive) {
+                this.unlockAchievement('hoarder');
+            }
+        }
+        
+        // Perfect Game: Reach 4096 with no tile removals
+        if (!this.achievements.perfectGame.unlocked && 
+            maxTile >= 4096 && 
+            !this.stats.currentGameUsedRemove) {
+            this.unlockAchievement('perfectGame');
+        }
+    },
+    
+    // Unlock an achievement
+    unlockAchievement(id) {
+        if (!this.achievements[id] || this.achievements[id].unlocked) return;
+        
+        this.achievements[id].unlocked = true;
+        this.saveAchievements();
+        this.showAchievementNotification(this.achievements[id]);
+        this.updateAchievementUI();
+        
+        // Confetti celebration
+        this.emitConfetti();
+        this.screenShake(10, 500);
+    },
+    
+    // Show achievement notification
+    showAchievementNotification(achievement) {
+        const notification = document.createElement('div');
+        notification.className = 'achievement-notification';
+        notification.innerHTML = `
+            <div class="achievement-icon">${achievement.icon}</div>
+            <div class="achievement-content">
+                <div class="achievement-title">Achievement Unlocked!</div>
+                <div class="achievement-name">${achievement.name}</div>
+                <div class="achievement-desc">${achievement.description}</div>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => notification.classList.add('show'), 100);
+        
+        // Remove after 5 seconds
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        }, 5000);
+    },
+    
+    // Update achievement UI
+    updateAchievementUI() {
+        const container = document.getElementById('achievements-list');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        for (const id in this.achievements) {
+            const achievement = this.achievements[id];
+            const card = document.createElement('div');
+            card.className = `achievement-card ${achievement.unlocked ? 'unlocked' : 'locked'}`;
+            card.innerHTML = `
+                <div class="achievement-icon">${achievement.icon}</div>
+                <div class="achievement-info">
+                    <div class="achievement-name">${achievement.name}</div>
+                    <div class="achievement-desc">${achievement.description}</div>
+                    ${achievement.unlocked ? '<div class="achievement-status">✓ Unlocked</div>' : '<div class="achievement-status">🔒 Locked</div>'}
+                </div>
+            `;
+            container.appendChild(card);
+        }
+        
+        // Update achievement count
+        const unlocked = Object.values(this.achievements).filter(a => a.unlocked).length;
+        const total = Object.keys(this.achievements).length;
+        const countEl = document.getElementById('achievement-count');
+        if (countEl) {
+            countEl.textContent = `${unlocked}/${total}`;
+        }
+    },
+    
+    // Toggle achievement modal
+    toggleAchievements() {
+        const modal = document.getElementById('achievements-modal');
+        if (!modal) return;
+        
+        if (modal.style.display === 'flex') {
+            modal.style.display = 'none';
+        } else {
+            this.updateAchievementUI();
+            modal.style.display = 'flex';
+        }
+    }
+});
 
 // Initialize game when page loads
 let game;

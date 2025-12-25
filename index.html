@@ -26,6 +26,9 @@
                     <div class="score-label">BEST</div>
                     <div class="score-value" id="best-score">0</div>
                 </div>
+                <button class="achievement-btn" onclick="game.toggleAchievements()" title="View Achievements">
+                    🏆 <span id="achievement-count">0/7</span>
+                </button>
             </div>
         </div>
 
@@ -122,6 +125,19 @@
                 <button class="btn btn-success" id="modal-continue" style="display: none;">Continue Playing</button>
                 <button class="btn btn-primary" id="modal-undo">Undo Last Move</button>
                 <button class="btn btn-primary" id="modal-new-game">New Game</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievements Modal -->
+    <div id="achievements-modal" class="modal">
+        <div class="modal-content achievements-modal">
+            <div class="modal-header">
+                <h2>🏆 Achievements</h2>
+                <button class="modal-close" onclick="game.toggleAchievements()">×</button>
+            </div>
+            <div id="achievements-list" class="achievements-list">
+                <!-- Achievement cards will be dynamically added here -->
             </div>
         </div>
     </div>
