@@ -1,140 +1,104 @@
-# 🌙 2048 DELUXE - Dark Mode Edition
+# 🎮 2048 DELUXE - The Ultimate Edition
 
-> *The classic number puzzle game, but make it ✨ aesthetic ✨*
+The most feature-rich and polished 2048 game ever created! Built with vanilla JavaScript, featuring 12 comprehensive gameplay systems including powerups, themes, achievements, sound effects, and hidden secrets.
 
-## 🎮 What's This?
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Status](https://img.shields.io/badge/status-complete-success)
+![Features](https://img.shields.io/badge/features-12%2F12-brightgreen)
 
-It's 2048. But cooler. With powerups. And dark mode that won't burn your retinas at 3 AM.
+## 🌟 Features Overview
 
-Slide tiles, merge numbers, reach 2048 (or don't, we won't judge). Now with **actual rewards** for being good at math!
+### ✨ Core Features (1-12)
+
+1. **⚡ 6 Unique Powerups**
+   - 🔙 Undo - Revert last move
+   - 🔄 Swap - Exchange two tiles
+   - 🔒 Lock - Freeze a tile in place
+   - 🎲 Shuffle - Randomize all tiles
+   - 🗑️ Remove - Delete a tile
+   - ⏫ Double - Double a tile's value
+
+2. **🎨 4 Unlockable Themes**
+   - 🎯 Default (Classic 2048)
+   - 🌆 Cyberpunk (Unlock at 1024)
+   - 🌸 Vaporwave (Unlock at 2048)
+   - 💚 Matrix (Unlock at 4096)
+
+3. **💫 Particle Effects System**
+   - Canvas-based particle rendering
+   - Theme-aware particle colors
+   - Smooth animations with custom physics
+
+4. **📳 Screen Shake Effects**
+   - Intensity scales with tile values
+   - Triggered on high-value merges (256+)
+
+5. **🎊 Confetti Animations**
+   - Theme unlocks, achievements, high-value tiles
+
+6. **🏆 8 Achievements System**
+   - ⚡ Speed Demon, 🎯 Minimalist, 🚫 No Powerups
+   - 🔄 Swap Expert, 💰 Powerup Hoarder, 💎 Perfect Game
+   - 🌟 Mega Master, 🔍 Secret Hunter (HIDDEN)
+
+7. **📊 Statistics Dashboard**
+   - 13 tracked metrics with animated counters
+
+8. **📐 Variable Grid Sizes**
+   - 4x4 Classic mode, 5x5 Challenge mode
+
+9. **🔊 Sound System**
+   - Procedural Web Audio API generation
+   - Unique sounds for merges, powerups, achievements
+
+10. **🎪 Easter Eggs & Secrets**
+    - 🎮 Konami Code, 🛠️ Dev Console, 🌟 Mega Secret
 
 ## 🚀 Quick Start
 
 ```bash
+# Clone and run
+git clone https://github.com/harshi12musigma-stack/2048-DELUXE.git
+cd 2048-DELUXE
 python3 -m http.server 8000
 # Open http://localhost:8000
-# Arrow keys or swipe = profit
 ```
 
-## ⚡ The Good Stuff
+## 🎮 How to Play
 
-- **🌑 Calm Dark Theme** - Easy on the eyes, hard on the tiles
-- **🎁 Powerup System** - Actually earn rewards, not just sadness
-  - Create **32** → Get Swap 🔄
-  - Create **64** → Get Lock 🔒
-  - Create **128** → Get Undo ↶
-  - Create **256** → Get Shuffle 🔀
-  - Create **512** → Get Remove 🗑️
-  - Create **1024** → Get Double ✨
-  - Create **2048+** → Get combo rewards! 🎉
-- **💾 Auto-save** - Your progress survives browser rage-quits
-- **⏪ Undo from Game Over** - Because everyone deserves a second chance
-- **🎯 Interactive Powerups** - Click-to-select system for Remove, Swap, Lock, and Double
-- **🔒 Lock System** - Strategic tile locking for ultimate control
-- **✨ Double Power** - Instantly boost tiles toward 4096+
-- **🎨 Smart Tile Colors** - Actually tell your numbers apart
+- **Arrow Keys** or **WASD**: Move tiles
+- **N**: New game
+- **~**: Dev console (secret!)
+- Merge tiles to reach 2048 and beyond!
 
-## 🎯 Powerups Explained
+## 🔮 Easter Eggs
 
-| Powerup | Icon | What It Does |
-|---------|------|--------------|
-| **Swap** | 🔄 | Swap any two tiles on the board |
-| **Lock** | 🔒 | Lock a tile in place for 3 moves |
-| **Undo** | ↶ | Take back that terrible move |
-| **Shuffle** | 🔀 | Rearrange tiles randomly (YOLO) |
-| **Remove** | 🗑️ | Delete any tile you want |
-| **Double** | ✨ | Double any tile's value instantly |
+### Konami Code 🎮
+Press: ↑↑↓↓←→←→BA for 5 free powerups!
 
-## 🎨 Features Nobody Asked For But Got Anyway
+### Dev Console 🛠️
+Press: ~ or ` for developer tools
 
-- Subtle animations (not distracting, we promise)
-- Smooth tile transitions (0.1s fast, like your moves should be)
-- Persistent game state (refresh = your game stays)
-- Victory modal (achievement unlocked!)
-- Best score tracking (brag to your friends)
-- Touch/swipe support (yes, it works on your phone)
+### Mega Secret 🌟
+Create an 8192+ tile for legendary status!
 
-## 🕹️ Controls
+## 📊 Statistics Tracked
 
-- **Arrow Keys** - Move tiles (revolutionary, we know)
-- **Click Powerups** - Use special abilities
-- **Swipe** - For the touch-screen folks
-- **Ctrl+Z in Real Life** - Not supported (yet)
+Total Games • Wins • Losses • Win Rate • Best/Average Scores • Win Streaks • Total Moves • Merges • Powerup Usage • Highest Tile • Play Time
 
-## 🏆 Pro Tips
+## 🔧 Technical Stack
 
-1. Corner strategy still works (boring but effective)
-2. Lock your highest tile in the corner (game changer!)
-3. Save double powerup for late game (4096 here we come)
-4. Don't waste powerups early (you'll thank us later)
-5. Swap can save impossible situations (use wisely)
-6. The undo button is NOT a crutch (it totally is)
-7. 2048 is just the beginning (keep going, champ)
-8. Dark mode + 2AM = *chef's kiss*
+- Vanilla JavaScript ES6 (3,196 lines)
+- HTML5 + CSS3 (1,715 lines)
+- Canvas API for particles
+- Web Audio API for sounds
+- LocalStorage for persistence
+- Zero external dependencies
 
-## � Theme System
+## 🎉 Project Status
 
-Unlock stunning visual themes by reaching milestone tiles!
-
-### Available Themes:
-
-| Theme | Unlock Tile | Description | Aesthetic |
-|-------|-------------|-------------|-----------|
-| 🌙 **Dark Mode** | Always Unlocked | Classic dark theme | Blue-gray minimalist |
-| 🌆 **Neon Cyberpunk** | **1024** | Pink/cyan neon glow | Futuristic neon city |
-| 🌸 **Vaporwave** | **2048** | Purple/pink sunset | 80s retro aesthetic |
-| 💚 **Matrix** | **4096** | Green terminal | Hacker code rain |
-
-### How It Works:
-
-1. **Create the milestone tile** (1024, 2048, or 4096)
-2. **🎨 NEW THEME UNLOCKED!** notification appears
-3. **Theme automatically switches** to the new unlock
-4. **Theme selector appears** in the UI
-5. **Click any unlocked theme** to switch anytime
-6. **Your preference is saved** across sessions
-
-### Theme Features:
-
-- ✨ **Smooth transitions** between themes
-- 💾 **Persistent storage** - themes stay unlocked
-- 🎭 **Unique aesthetics** - each theme completely transforms the UI
-- 🔓 **Progressive unlocks** - keep playing to see them all!
-- 🎯 **Visual rewards** - celebrate your achievements with style
-
-## 🎯 Goal
-
-Reach 2048. Or 4096. Or 8192. We believe in you.
-
-Actually, just have fun. Numbers are temporary, vibes are eternal. ✌️
-
-## ⚙️ Additional Features
-
-- 💾 **Auto-save**: Game state persists across browser sessions
-- 📱 **Touch controls**: Swipe to play on mobile devices
-- ⌨️ **Keyboard controls**: Arrow keys or WASD
-- 🎯 **Best score tracking**: Your highest score is always saved
-- 🔄 **Undo from Game Over**: Second chances when you need them
-- ⚠️ **New Game confirmation**: Prevents accidental progress loss
-- 🎨 **Theme persistence**: Your theme preference is remembered
-
-## 📝 Tech Stack
-
-- Vanilla JS (no frameworks were harmed)
-- CSS that actually makes sense
-- HTML (the classic trio is back)
-- localStorage (your save game's best friend)
-- Pure determination
-
-## 🐛 Known "Features"
-
-- May cause addiction
-- Might make you good at mental math
-- Could result in "just one more game" syndrome
-- Warning: Dark mode may be too comfortable
+**COMPLETE!** All 12 features fully implemented and polished.
 
 ---
 
-Made with 🎮 and ☕ | No tiles were harmed in the making of this game
-
-*PS: If you reach 16384, please touch grass. We're concerned.*
+*Made with ❤️ and lots of JavaScript by [Harshita Gupta](https://github.com/harshi12musigma-stack)*
