@@ -623,6 +623,15 @@ class Game2048 {
         // Check for theme unlocks
         this.checkThemeUnlock(mergedValue);
         
+        // Screen shake for high-value tiles
+        if (mergedValue === 2048) {
+            this.screenShake(8, 400);
+        } else if (mergedValue === 4096) {
+            this.screenShake(12, 500);
+        } else if (mergedValue >= 8192) {
+            this.screenShake(16, 600);
+        }
+        
         // Award powerups based on tile values created
         let reward = null;
         
@@ -1560,6 +1569,11 @@ class Game2048 {
     
     showVictory() {
         this.won = true;
+        
+        // Confetti celebration!
+        this.emitConfetti();
+        this.screenShake(6, 400);
+        
         setTimeout(() => {
             const continueBtn = document.getElementById('modal-continue');
             const undoBtn = document.getElementById('modal-undo');
@@ -1674,8 +1688,10 @@ class Game2048 {
         // Show unlock notification
         this.showThemeUnlockNotification(themeName);
         
-        // Emit celebration particles BEFORE switching theme
+        // Emit celebration particles and confetti BEFORE switching theme
         this.emitThemeUnlockParticles();
+        this.emitConfetti();
+        this.screenShake(10, 600);
         
         // Auto-switch to newly unlocked theme
         this.switchTheme(themeName);
@@ -1857,12 +1873,67 @@ class Game2048 {
             }, i * 100);
         }
     }
+    
+    // ===== SCREEN SHAKE EFFECT =====
+    screenShake(intensity = 10, duration = 300) {
+        const container = document.querySelector('.container');
+        if (!container) return;
+        
+        const startTime = Date.now();
+        const originalTransform = container.style.transform;
+        
+        const shake = () => {
+            const elapsed = Date.now() - startTime;
+            
+            if (elapsed < duration) {
+                const progress = elapsed / duration;
+                const currentIntensity = intensity * (1 - progress); // Fade out
+                
+                const x = (Math.random() - 0.5) * currentIntensity * 2;
+                const y = (Math.random() - 0.5) * currentIntensity * 2;
+                const rotation = (Math.random() - 0.5) * (currentIntensity / 5);
+                
+                container.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg)`;
+                requestAnimationFrame(shake);
+            } else {
+                container.style.transform = originalTransform;
+            }
+        };
+        
+        requestAnimationFrame(shake);
+    }
+    
+    // ===== CONFETTI ANIMATION =====
+    emitConfetti() {
+        if (!this.particleSystem) return;
+        
+        const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f7b731', '#5f27cd', '#00d2d3', '#ff9ff3', '#54a0ff'];
+        const centerX = window.innerWidth / 2;
+        const topY = 0;
+        
+        // Create confetti burst from top
+        for (let i = 0; i < 5; i++) {
+            setTimeout(() => {
+                for (let j = 0; j < 20; j++) {
+                    const offsetX = (Math.random() - 0.5) * window.innerWidth * 0.6;
+                    this.particleSystem.emit(centerX + offsetX, topY, 1, {
+                        colors: [colors[Math.floor(Math.random() * colors.length)]],
+                        sizeRange: [6, 14],
+                        speedRange: [2, 5],
+                        lifetime: 3000,
+                        spread: 180, // Downward spread
+                        gravity: 0.2
+                    });
+                }
+            }, i * 150);
+        }
+    }
 }
 
 // ===== PARTICLE CLASSES =====
 
 class Particle {
-    constructor(x, y, color, velocity, size, lifetime) {
+    constructor(x, y, color, velocity, size, lifetime, gravity = null) {
         this.x = x;
         this.y = y;
         this.vx = velocity.x;
@@ -1872,12 +1943,13 @@ class Particle {
         this.lifetime = lifetime;
         this.age = 0;
         this.opacity = 1;
+        this.gravity = gravity !== null ? gravity : 0.15; // Custom or default gravity
     }
     
     update(deltaTime) {
         this.x += this.vx;
         this.y += this.vy;
-        this.vy += 0.15; // Gravity
+        this.vy += this.gravity; // Apply gravity
         this.age += deltaTime;
         this.opacity = Math.max(0, 1 - (this.age / this.lifetime));
         this.size = Math.max(0, this.size * 0.98); // Shrink
@@ -1942,7 +2014,8 @@ class ParticleSystem {
             sizeRange = [3, 8],
             speedRange = [1, 3],
             lifetime = 1000,
-            spread = 360
+            spread = 360,
+            gravity = null
         } = config;
         
         for (let i = 0; i < count; i++) {
@@ -1958,7 +2031,7 @@ class ParticleSystem {
                 y: Math.sin(angle) * speed
             };
             
-            const particle = new Particle(x, y, color, velocity, size, lifetime);
+            const particle = new Particle(x, y, color, velocity, size, lifetime, gravity);
             this.particles.push(particle);
         }
     }
